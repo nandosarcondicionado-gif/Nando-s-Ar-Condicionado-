@@ -11,4 +11,3 @@ Quando a API segura for implementada:
 6. Fazer backup e importar dados antigos somente depois de conferir os arquivos exportados e os totais.
 
 Não cole credenciais neste repositório.
-
