@@ -24,30 +24,68 @@ import {
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<'ADMIN' | 'TECH'>('ADMIN')
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  
+  // Lista completa com todos os campos operacionais reais
   const [osList, setOsList] = useState([
-    { id: 'OS-2026-089', client: 'Residencial Silva', eq: 'Split Fujitsu 12.000 BTU', desc: 'Higienização + Carga de Gás', val: 480, status: 'Em Andamento', address: 'Rua das Palmeiras, 142 - Centro' },
-    { id: 'OS-2026-090', client: 'Supermercado Central', eq: 'Cassete Elgin 36.000 BTU', desc: 'Manutenção Preventiva PMOC', val: 950, status: 'Agendado', address: 'Av. Brasil, 450 - Centro' }
+    { 
+      id: 'OS-2026-089', 
+      client: 'Residencial Silva', 
+      phone: '(14) 99111-1234',
+      eq: 'Split Fujitsu 12.000 BTU', 
+      defect: 'Vazando água internamente e não gela',
+      desc: 'Limpeza química com bolsa coletora e recarga parcial R410A',
+      val: 480, 
+      status: 'Em Andamento', 
+      address: 'Rua das Palmeiras, 142 - Centro, Bauru - SP' 
+    },
+    { 
+      id: 'OS-2026-090', 
+      client: 'Supermercado Central', 
+      phone: '(14) 99222-5555',
+      eq: 'Cassete Elgin 36.000 BTU', 
+      defect: 'Manutenção preventiva trimestral PMOC',
+      desc: 'Lavagem de filtros, serpentina e conferência de pressões',
+      val: 950, 
+      status: 'Agendado', 
+      address: 'Av. Brasil, 450 - Centro, Bauru - SP' 
+    }
   ])
 
-  const [novoClienteOS, setNovoClienteOS] = useState('')
-  const [novoValorOS, setNovoValorOS] = useState('')
+  // Estados para o cadastro completo de nova OS
   const [showModal, setShowModal] = useState(false)
+  const [cliente, setCliente] = useState('')
+  const [telefone, setTelefone] = useState('')
+  const [equipamento, setEquipamento] = useState('')
+  const [defeito, setDefeito] = useState('')
+  const [servico, setServico] = useState('')
+  const [valor, setValor] = useState('')
+  const [endereco, setEndereco] = useState('')
 
-  const adicionarOS = (e: React.FormEvent) => {
+  const cadastrarOSCompleta = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!novoClienteOS || !novoValorOS) return
-    const nova = {
-      id: `OS-2026-09${osList.length + 1}`,
-      client: novoClienteOS,
-      eq: 'Split Inverter Geral',
-      desc: 'Atendimento Técnico Especializado',
-      val: Number(novoValorOS),
+    if (!cliente || !valor) return
+
+    const novaOS = {
+      id: `OS-2026-0${91 + osList.length}`,
+      client: cliente,
+      phone: telefone || '(14) 99168-9815',
+      eq: equipamento || 'Ar-Condicionado Split Inverter',
+      defect: defeito || 'Manutenção geral solicitada',
+      desc: servico || 'Higienização e revisão técnica completa',
+      val: Number(valor),
       status: 'Novo',
-      address: 'Endereço cadastrado via cliente'
+      address: endereco || 'Endereço não informado'
     }
-    setOsList([nova, ...osList])
-    setNovoClienteOS('')
-    setNovoValorOS('')
+
+    setOsList([novaOS, ...osList])
+    // Limpar campos
+    setCliente('')
+    setTelefone('')
+    setEquipamento('')
+    setDefeito('')
+    setServico('')
+    setValor('')
+    setEndereco('')
     setShowModal(false)
   }
 
@@ -154,42 +192,101 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* MODAL PARA ADICIONAR OS */}
+        {/* MODAL DE CADASTRO COMPLETO DE OS */}
         {showModal && (
           <div className="fixed inset-0 bg-navy/60 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div className="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center border-b pb-3">
-                <h3 className="font-bold text-navy text-lg">Criar Nova Ordem de Serviço</h3>
+                <h3 className="font-bold text-navy text-lg">Cadastro Completo de Ordem de Serviço</h3>
                 <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-navy cursor-pointer">
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <form onSubmit={adicionarOS} className="space-y-4 text-sm">
+
+              <form onSubmit={cadastrarOSCompleta} className="space-y-3 text-sm">
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Nome do Cliente</label>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">Nome do Cliente *</label>
                   <input 
                     type="text" 
-                    value={novoClienteOS} 
-                    onChange={(e) => setNovoClienteOS(e.target.value)}
+                    value={cliente} 
+                    onChange={(e) => setCliente(e.target.value)} 
                     placeholder="Ex: Escritório Comercial Bauru" 
-                    required
-                    className="w-full p-2.5 border rounded-lg"
+                    required 
+                    className="w-full p-2.5 border rounded-lg" 
                   />
                 </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">Telefone / WhatsApp</label>
+                    <input 
+                      type="text" 
+                      value={telefone} 
+                      onChange={(e) => setTelefone(e.target.value)} 
+                      placeholder="(14) 99168-9815" 
+                      className="w-full p-2.5 border rounded-lg" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">Valor Total (R$) *</label>
+                    <input 
+                      type="number" 
+                      value={valor} 
+                      onChange={(e) => setValor(e.target.value)} 
+                      placeholder="Ex: 500" 
+                      required 
+                      className="w-full p-2.5 border rounded-lg font-bold text-navy" 
+                    />
+                  </div>
+                </div>
+
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Valor Total do Serviço (R$)</label>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">Endereço Completo</label>
                   <input 
-                    type="number" 
-                    value={novoValorOS} 
-                    onChange={(e) => setNovoValorOS(e.target.value)}
-                    placeholder="Ex: 600" 
-                    required
-                    className="w-full p-2.5 border rounded-lg font-bold text-navy"
+                    type="text" 
+                    value={endereco} 
+                    onChange={(e) => setEndereco(e.target.value)} 
+                    placeholder="Rua Exemplo, 123 - Bairro" 
+                    className="w-full p-2.5 border rounded-lg" 
                   />
                 </div>
-                <div className="pt-2 flex gap-3">
-                  <button type="submit" className="flex-1 bg-turquoise hover:bg-turquoise-hover text-navy font-bold py-2.5 rounded-lg cursor-pointer">
-                    Salvar e Incluir no Caixa
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">Equipamento (Marca / Modelo / BTU)</label>
+                  <input 
+                    type="text" 
+                    value={equipamento} 
+                    onChange={(e) => setEquipamento(e.target.value)} 
+                    placeholder="Split Fujitsu 12.000 BTU Inverter" 
+                    className="w-full p-2.5 border rounded-lg" 
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">Defeito Relatado</label>
+                  <input 
+                    type="text" 
+                    value={defeito} 
+                    onChange={(e) => setDefeito(e.target.value)} 
+                    placeholder="Ex: Não gela / Vazando água" 
+                    className="w-full p-2.5 border rounded-lg" 
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">Procedimento Técnico</label>
+                  <input 
+                    type="text" 
+                    value={servico} 
+                    onChange={(e) => setServico(e.target.value)} 
+                    placeholder="Ex: Higienización + Carga de Gás R410A" 
+                    className="w-full p-2.5 border rounded-lg" 
+                  />
+                </div>
+
+                <div className="pt-3 flex gap-3">
+                  <button type="submit" className="flex-1 bg-turquoise hover:bg-turquoise-hover text-navy font-bold py-3 rounded-lg cursor-pointer">
+                    Salvar e Registrar OS
                   </button>
                 </div>
               </form>
@@ -317,6 +414,7 @@ export default function Dashboard() {
                         <MapPin className="w-3.5 h-3.5 text-slate-400 mr-1" />
                         {item.address}
                       </p>
+                      <p className="text-xs text-slate-500 mt-1">Tel: {item.phone}</p>
                     </div>
                     <span className="bg-sky-100 text-sky-800 text-xs font-bold px-2.5 py-1 rounded-full">
                       {item.status}
@@ -325,6 +423,7 @@ export default function Dashboard() {
 
                   <div className="space-y-2 text-sm">
                     <p><strong className="text-slate-700">Equipamento:</strong> {item.eq}</p>
+                    <p><strong className="text-slate-700">Defeito Relatado:</strong> {item.defect}</p>
                     <p><strong className="text-slate-700">Procedimento:</strong> {item.desc}</p>
                   </div>
 
