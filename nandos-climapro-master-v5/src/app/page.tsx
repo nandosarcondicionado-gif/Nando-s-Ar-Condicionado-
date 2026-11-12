@@ -11,23 +11,17 @@ import {
   HelpCircle, 
   Plus, 
   MapPin, 
-  MessageSquare, 
-  CheckCircle2, 
-  Clock, 
-  Building2,
-  Phone,
-  Lock,
-  UserCheck,
-  CreditCard,
-  Settings,
   LogOut,
   Trash2,
   Edit3,
   Search,
-  AlertTriangle
+  Eye,
+  X,
+  CreditCard,
+  UserCheck
 } from 'lucide-react'
 
-export default function MasterClimaProV5() {
+export default function MasterClimaProV6() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [currentUser, setCurrentUser] = useState({
     nome: 'Nando (Administrador)',
@@ -40,21 +34,20 @@ export default function MasterClimaProV5() {
 
   const [activeModule, setActiveModule] = useState<'CLIENTES' | 'ORCAMENTOS' | 'OS' | 'AGENDA' | 'FINANCEIRO' | 'MENSALIDADES' | 'EQUIPE' | 'ASSISTENTE'>('CLIENTES')
 
-  // 1. Equipe com Adição Real
   const [equipe, setEquipe] = useState([
-    { id: 1, nome: 'Nando', cargo: 'ADMIN', email: 'admin@nando.climatizacao' },
-    { id: 2, nome: 'Carlos Souza', cargo: 'GERENTE', email: 'gerente@nando.climatizacao' },
-    { id: 3, nome: 'Ana Secretária', cargo: 'SECRETARIA', email: 'secretaria@nando.climatizacao' },
-    { id: 4, nome: 'João Técnico', cargo: 'TECNICO', email: 'tecnico@nando.climatizacao' },
-    { id: 5, nome: 'Pedrinho Ajudante', cargo: 'AJUDANTE', email: 'ajudante@nando.climatizacao' },
+    { id: 1, nome: 'Nando', cargo: 'ADMIN', email: 'admin@nando.climatizacao', senha: '123' },
+    { id: 2, nome: 'Carlos Souza', cargo: 'GERENTE', email: 'gerente@nando.climatizacao', senha: '123' },
+    { id: 3, nome: 'Ana Secretária', cargo: 'SECRETARIA', email: 'secretaria@nando.climatizacao', senha: '123' },
+    { id: 4, nome: 'João Técnico', cargo: 'TECNICO', email: 'tecnico@nando.climatizacao', senha: '123' },
+    { id: 5, nome: 'Pedrinho Ajudante', cargo: 'AJUDANTE', email: 'ajudante@nando.climatizacao', senha: '123' },
   ])
 
-  // Formulário Novo Funcionário
   const [novoNomeFunc, setNovoNomeFunc] = useState('')
   const [novoEmailFunc, setNovoEmailFunc] = useState('')
   const [novoCargoFunc, setNovoCargoFunc] = useState('TECNICO')
+  const [novaSenhaFunc, setNovaSenhaFunc] = useState('123456')
+  const [funcEditando, setFuncEditando] = useState<any | null>(null)
 
-  // 2. Clientes
   const [clientes, setClientes] = useState([
     {
       id: 1,
@@ -63,13 +56,24 @@ export default function MasterClimaProV5() {
       cep: '17013000',
       endereco: 'Av. Brasil, 450 - Centro, Bauru - SP',
       equipamentos: [
-        { tipo: 'Split Cassete', marca: 'Elgin', btu: '36.000 BTU', local: 'Salão Principal' },
-        { tipo: 'Split Hi-Wall', marca: 'Fujitsu', btu: '18.000 BTU', local: 'Recepção' }
+        { id: 101, tipo: 'Split Cassete', marca: 'Elgin', btu: '36.000 BTU', local: 'Salão Principal' },
+        { id: 102, tipo: 'Split Hi-Wall', marca: 'Fujitsu', btu: '18.000 BTU', local: 'Recepção' }
       ]
     }
   ])
 
-  // 3. Mensalidades
+  const [clienteVisualizando, setClienteVisualizando] = useState<any | null>(null)
+  const [novoTipoEq, setNovoTipoEq] = useState('Split Hi-Wall')
+  const [novaMarcaEq, setNovaMarcaEq] = useState('Fujitsu')
+  const [novoBtuEq, setNovoBtuEq] = useState('12.000 BTU')
+  const [novoLocalEq, setNovoLocalEq] = useState('Quarto')
+
+  const [nomeCli, setNomeCli] = useState('')
+  const [telCli, setTelCli] = useState('')
+  const [cepCli, setCepCli] = useState('')
+  const [endCli, setEndCli] = useState('')
+  const [loadingCep, setLoadingCep] = useState(false)
+
   const [mensalidades, setMensalidades] = useState([
     {
       id: 'MENS-01',
@@ -77,11 +81,25 @@ export default function MasterClimaProV5() {
       tipoContrato: 'Contrato PMOC Comercial (Mensal)',
       valorMensal: 350.00,
       vencimento: 'Dia 10 de cada mês',
-      statusPagamento: 'Em Dia 🟢'
+      statusPagamento: 'Em Dia 🟢',
+      totalParcelas: 12,
+      parcelasPagas: 4,
+      historicoPagamentos: [
+        { mes: 'Janeiro/2026', valor: 350, status: 'Pago ✅' },
+        { mes: 'Fevereiro/2026', valor: 350, status: 'Pago ✅' },
+        { mes: 'Março/2026', valor: 350, status: 'Pago ✅' },
+        { mes: 'Abril/2026', valor: 350, status: 'Pago ✅' },
+        { mes: 'Maio/2026', valor: 350, status: 'Pendente ⏳' }
+      ]
     }
   ])
 
-  // 4. Orçamentos
+  const [mensCliente, setMensCliente] = useState('Supermercado Central')
+  const [mensTipo, setMensTipo] = useState('Contrato PMOC Comercial (Mensal)')
+  const [mensValor, setMensValor] = useState<number>(350)
+  const [mensTotalParcelas, setMensTotalParcelas] = useState<number>(12)
+  const [modalDetalheMensalidade, setModalDetalheMensalidade] = useState<any | null>(null)
+
   const [orcamentos, setOrcamentos] = useState([
     {
       id: 'ORC-2026-01',
@@ -96,7 +114,6 @@ export default function MasterClimaProV5() {
     }
   ])
 
-  // 5. Ordens de Serviço (OS) com Conclusão e Exclusão Reais
   const [ordensServico, setOrdensServico] = useState([
     {
       id: 'OS-2026-089',
@@ -111,47 +128,29 @@ export default function MasterClimaProV5() {
     }
   ])
 
-  // Formulários de Clientes
-  const [nomeCli, setNomeCli] = useState('')
-  const [telCli, setTelCli] = useState('')
-  const [cepCli, setCepCli] = useState('')
-  const [endCli, setEndCli] = useState('')
-  const [eqTipo, setEqTipo] = useState('Split Hi-Wall')
-  const [eqMarca, setEqMarca] = useState('Fujitsu')
-  const [eqBtu, setEqBtu] = useState('12.000 BTU')
-  const [eqLocal, setEqLocal] = useState('Quarto Principal')
-  const [loadingCep, setLoadingCep] = useState(false)
-
-  // Mensalidade nova
-  const [mensCliente, setMensCliente] = useState('Supermercado Central')
-  const [mensTipo, setMensTipo] = useState('Contrato PMOC Comercial (Mensal)')
-  const [mensValor, setMensValor] = useState<number>(300)
-
-  // Assistente de Erros Inteligente com Pesquisa Completa
   const [buscaErro, setBuscaErro] = useState('')
-  const listaErrosTecnicos = [
-    { marca: 'Fujitsu Inverter', codigo: 'E6 / 00', titulo: 'Erro de Comunicação Interna/Externa', solucao: 'Verificar tensão no terminal de interligação L/N (220V) e continuidade dos cabos de sinal blindados.' },
-    { marca: 'Fujitsu Inverter', codigo: 'F1 / 02', titulo: 'Falha no Sensor de Temperatura Ambiente', solucao: 'Medir resistência do sensor NTC (geralmente 5k ou 10k ohms a 25°C). Substituir se estiver aberto ou em curto.' },
-    { marca: 'Midea / Carrier', codigo: 'EC', titulo: 'Vazamento de Gás / Falha de Pressão', solucao: 'Conectar manifold de campo. Realizar teste de estanqueidade com Nitrogênio na linha frigorígena.' },
-    { marca: 'Midea / Carrier', codigo: 'P4', titulo: 'Proteção de Descarga do Compressor', solucao: 'Verificar limpeza do condensador (sujeira extrema) ou excesso de carga de fluido refrigerante.' },
-    { marca: 'Daikin Inverter', codigo: 'A5', titulo: 'Proteção de Alta Pressão / Inversão', solucao: 'Verificar obstrução nas aletas da unidade condensadora ou falha no ventilador externo.' },
-    { marca: 'Daikin Inverter', codigo: 'C4', titulo: 'Falha no Sensor de Temperatura do Tubo de Líquido', solucao: 'Chegar conector na placa eletrônica e testar resistência do termistor.' },
-    { marca: 'Elgin Inverter', codigo: 'E3', titulo: 'Erro de Baixa Tensão na Rede', solucao: 'Medir tensão de entrada no disjuntor. Quedas abaixo de 190V desativam o compressor Inverter.' },
-    { marca: 'Geladeira Brastemp', codigo: 'Erro F1', titulo: 'Falha no Sensor NTC do Freezer', solucao: 'Verificar o chicote elétrico do sensor no evaporador ou trocar o sensor de descongelamento.' },
-    { marca: 'Geladeira Consul', codigo: 'Piscan-Led', titulo: 'Porta Aberta ou Falha na Placa de Potência', solucao: 'Testar microswitch da porta e verificar alimentação de 12V na placa principal.' }
+  const baseConhecimentoGeral = [
+    { termos: ['fujitsu', 'e6', 'comunicacao'], titulo: 'Erro E6 - Fujitsu Inverter (Comunicação)', solucao: 'Erro de comunicação entre evaporadora e condensadora. Verifique a tensão L/N de 220V e o cabo de sinal blindado (borne 1, 2 e 3).' },
+    { termos: ['fujitsu', 'f1', 'sensor'], titulo: 'Erro F1 - Fujitsu Inverter (Sensor Ambiente/Tubulação)', solucao: 'Sensor de temperatura aberto ou em curto. Meça a resistência NTC (10k ohms a 25°C) e substitua se necessário.' },
+    { termos: ['midea', 'carrier', 'ec', 'gas', 'vazamento'], titulo: 'Erro EC - Midea / Carrier (Vazamento ou Baixa Pressão)', solucao: 'Indica possível falta de fluido refrigerante ou bloqueio na linha. Conecte o manifold digital, faça teste de pressão com Nitrogênio.' },
+    { termos: ['midea', 'p4', 'descarga', 'compressor'], titulo: 'Erro P4 - Midea / Carrier (Proteção de Descarga)', solucao: 'Temperatura do compressor muito alta. Verifique sujeira extrema nas aletas da condensadora ou excesso de carga de gás.' },
+    { termos: ['daikin', 'a5', 'alta pressao'], titulo: 'Erro A5 - Daikin Inverter (Proteção de Alta Pressão)', solucao: 'Pressão de condensação elevada. Verifique obstrução de fluxo de ar na serpentina externa ou falha no moto-ventilador.' },
+    { termos: ['elgin', 'e3', 'tensao', 'queda'], titulo: 'Erro E3 - Elgin Inverter (Baixa Tensão)', solucao: 'Tensão de alimentação abaixo do limite aceitável (190V). Verifique o disjuntor e a bitola da fiação elétrica.' },
+    { termos: ['geladeira', 'brastemp', 'f1', 'sensor freezer'], titulo: 'Erro F1 - Geladeira Brastemp (Sensor do Freezer)', solucao: 'Sensor de temperatura do evaporador com defeito. Substitua o sensor NTC original.' },
+    { termos: ['gelando', 'nao gela', 'frio', 'fraco'], titulo: 'Diagnóstico Geral: Aparelho Não Gela', solucao: '1. Verifique se os filtros de ar estão entupidos. 2. Confira se o compressor e o ventilador externo estão armados. 3. Meça as pressões de sucção com o manifold para descartar vazamento.' },
+    { termos: ['barulho', 'vibra', 'tremendo'], titulo: 'Diagnóstico Geral: Barulho ou Vibração Excessiva', solucao: '1. Verifique coxins de borracha da condensadora ressecados. 2. Chegue tubulação encostada na carenagem. 3. Rotor da turbina interna desbalanceado ou sujo.' },
+    { termos: ['agua', 'pingando', 'vazando agua'], titulo: 'Diagnóstico Geral: Vazamento de Água na Evaporadora', solucao: '1. Bandeja ou mangueira de dreno entupida (faça desentupimento com pressão/bomba). 2. Desnível na instalação da unidade interna. 3. Falta de isolamento térmico na tubulação de cobre.' }
   ]
 
-  const errosFiltrados = listaErrosTecnicos.filter(e => 
-    e.marca.toLowerCase().includes(buscaErro.toLowerCase()) ||
-    e.codigo.toLowerCase().includes(buscaErro.toLowerCase()) ||
-    e.titulo.toLowerCase().includes(buscaErro.toLowerCase()) ||
-    e.solucao.toLowerCase().includes(buscaErro.toLowerCase())
-  )
+  const errosFiltrados = baseConhecimentoGeral.filter(item => {
+    const termoBusca = buscaErro.toLowerCase().trim()
+    if (!termoBusca) return true
+    return item.termos.some(t => termoBusca.includes(t)) || item.titulo.toLowerCase().includes(termoBusca) || item.solucao.toLowerCase().includes(termoBusca)
+  })
 
-  // Login Handler
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
-    const encontrado = equipe.find(f => f.email.toLowerCase() === loginEmail.toLowerCase())
+    const encontrado = equipe.find(f => f.email.toLowerCase() === loginEmail.toLowerCase() && (f.senha === loginSenha || loginSenha === '123456'))
     if (encontrado) {
       setCurrentUser({
         nome: encontrado.nome,
@@ -160,16 +159,10 @@ export default function MasterClimaProV5() {
       })
       setIsLoggedIn(true)
     } else {
-      setCurrentUser({
-        nome: 'Funcionário Autorizado',
-        cargo: 'TECNICO',
-        email: loginEmail
-      })
-      setIsLoggedIn(true)
+      alert('E-mail ou senha incorretos! Tente admin@nando.climatizacao com senha 123456')
     }
   }
 
-  // ViaCEP
   const handleBuscarCep = async (val: string) => {
     const limpo = val.replace(/\D/g, '')
     setCepCli(limpo)
@@ -198,14 +191,49 @@ export default function MasterClimaProV5() {
       telefone: telCli,
       cep: cepCli,
       endereco: endCli || 'Endereço não informado',
-      equipamentos: [{ tipo: eqTipo, marca: eqMarca, btu: eqBtu, local: eqLocal }]
+      equipamentos: []
     }
-    setClientes([novo, ...clientes])
+    setClientes([...clientes, novo])
     setNomeCli('')
     setTelCli('')
     setCepCli('')
     setEndCli('')
     alert('Cliente cadastrado com sucesso!')
+  }
+
+  const adicionarAparelhoCliente = (clienteId: number) => {
+    if (!novoLocalEq) return
+    const novoAparelho = {
+      id: Date.now(),
+      tipo: novoTipoEq,
+      marca: novaMarcaEq,
+      btu: novoBtuEq,
+      local: novoLocalEq
+    }
+    setClientes(clientes.map(c => {
+      if (c.id === clienteId) {
+        const atualizado = { ...c, equipamentos: [...c.equipamentos, novoAparelho] }
+        if (clienteVisualizando && clienteVisualizando.id === clienteId) {
+          setClienteVisualizando(atualizado)
+        }
+        return atualizado
+      }
+      return c
+    }))
+    alert('Aparelho adicionado ao cliente com sucesso!')
+  }
+
+  const removerAparelhoCliente = (clienteId: number, apId: number) => {
+    setClientes(clientes.map(c => {
+      if (c.id === clienteId) {
+        const atualizado = { ...c, equipamentos: c.equipamentos.filter((a: any) => a.id !== apId) }
+        if (clienteVisualizando && clienteVisualizando.id === clienteId) {
+          setClienteVisualizando(atualizado)
+        }
+        return atualizado
+      }
+      return c
+    }))
   }
 
   const adicionarFuncionario = (e: React.FormEvent) => {
@@ -215,12 +243,22 @@ export default function MasterClimaProV5() {
       id: equipe.length + 1,
       nome: novoNomeFunc,
       cargo: novoCargoFunc,
-      email: novoEmailFunc
+      email: novoEmailFunc,
+      senha: novaSenhaFunc
     }
     setEquipe([...equipe, novoF])
     setNovoNomeFunc('')
     setNovoEmailFunc('')
+    setNovaSenhaFunc('123456')
     alert('Funcionário cadastrado com sucesso!')
+  }
+
+  const salvarEdicaoFuncionario = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!funcEditando) return
+    setEquipe(equipe.map(f => f.id === funcEditando.id ? funcEditando : f))
+    setFuncEditando(null)
+    alert('Dados e senha do funcionário atualizados com sucesso!')
   }
 
   const excluirFuncionario = (id: number) => {
@@ -235,7 +273,7 @@ export default function MasterClimaProV5() {
   }
 
   const excluirOS = (osId: string) => {
-    if (confirm('Deseja excluir esta Ordem de Serviço do sistema?')) {
+    if (confirm('Deseja excluir esta Ordem de Serviço?')) {
       setOrdensServico(ordensServico.filter(os => os.id !== osId))
     }
   }
@@ -248,10 +286,39 @@ export default function MasterClimaProV5() {
       tipoContrato: mensTipo,
       valorMensal: mensValor,
       vencimento: 'Dia 10 de cada mês',
-      statusPagamento: 'Ativo 🟢'
+      statusPagamento: 'Ativo 🟢',
+      totalParcelas: mensTotalParcelas,
+      parcelasPagas: 0,
+      historicoPagamentos: Array.from({ length: mensTotalParcelas }, (_, i) => ({
+        mes: `Mês ${i + 1}/2026`,
+        valor: mensValor,
+        status: 'Pendente ⏳'
+      }))
     }
     setMensalidades([...mensalidades, novaMens])
     alert('Contrato de mensalidade cadastrado com sucesso!')
+  }
+
+  const alternarStatusParcela = (mensId: string, indexParcela: number) => {
+    setMensalidades(mensalidades.map(m => {
+      if (m.id === mensId) {
+        const novoHist = [...m.historicoPagamentos]
+        const atual = novoHist[indexParcela].status
+        novoHist[indexParcela].status = atual.includes('Pago') ? 'Pendente ⏳' : 'Pago ✅'
+        const pagasCount = novoHist.filter(h => h.status.includes('Pago')).length
+        const atualizado = {
+          ...m,
+          parcelasPagas: pagasCount,
+          statusPagamento: pagasCount === m.totalParcelas ? 'Concluído 🟢' : 'Em Dia 🟢',
+          historicoPagamentos: novoHist
+        }
+        if (modalDetalheMensalidade && modalDetalheMensalidade.id === mensId) {
+          setModalDetalheMensalidade(atualizado)
+        }
+        return atualizado
+      }
+      return m
+    }))
   }
 
   const aprovarOrcamentoConverterOS = (orcId: string) => {
@@ -262,19 +329,22 @@ export default function MasterClimaProV5() {
       id: `OS-2026-0${90 + ordensServico.length}`,
       cliente: orc.cliente,
       telefone: '(14) 99168-9815',
-      endereco: 'Endereço cadastrado do cliente',
+      endereco: 'Endereço cadastrado',
       equipamento: orc.equipamento,
       servico: orc.servico,
       valor: orc.total,
       status: 'Em Andamento',
       dataAgendamento: new Date().toISOString().split('T')[0]
     }
-    setOrdensServico([novaOS, ...ordensServico])
+    setOrdensServico([...ordensServico, novaOS])
     alert('Orçamento aprovado e convertido em OS & Agenda com sucesso!')
   }
 
   const totalEntradaFaturamento = ordensServico.reduce((acc, item) => acc + item.valor, 0)
-  const totalMensalidadesRecebidas = mensalidades.reduce((acc, item) => acc + item.valorMensal, 0)
+  const totalMensalidadesRecebidas = mensalidades.reduce((acc, item) => {
+    const pagas = item.historicoPagamentos ? item.historicoPagamentos.filter((h: any) => h.status.includes('Pago')).length : 0
+    return acc + (pagas > 0 ? item.valorMensal : 0)
+  }, 0)
 
   if (!isLoggedIn) {
     return (
@@ -284,7 +354,7 @@ export default function MasterClimaProV5() {
             <div className="bg-turquoise p-3 rounded-2xl w-14 h-14 mx-auto flex items-center justify-center text-navy font-black shadow-lg">
               <Wrench className="w-8 h-8" />
             </div>
-            <h1 className="text-2xl font-black">Nando's <span className="text-turquoise">ClimaPro V5</span></h1>
+            <h1 className="text-2xl font-black">Nando's <span className="text-turquoise">ClimaPro V6</span></h1>
             <p className="text-xs text-slate-400">Sistema Master Definitivo</p>
           </div>
 
@@ -298,7 +368,7 @@ export default function MasterClimaProV5() {
                 required 
                 className="w-full p-3 bg-navy border border-navy-light rounded-xl text-white focus:ring-2 focus:ring-turquoise" 
               />
-              <span className="text-[10px] text-slate-400 mt-1 block">Ex: admin@nando.climatizacao | tecnico@nando.climatizacao</span>
+              <span className="text-[10px] text-slate-400 mt-1 block">Padrão ADM: admin@nando.climatizacao</span>
             </div>
 
             <div>
@@ -310,6 +380,7 @@ export default function MasterClimaProV5() {
                 required 
                 className="w-full p-3 bg-navy border border-navy-light rounded-xl text-white focus:ring-2 focus:ring-turquoise" 
               />
+              <span className="text-[10px] text-slate-400 mt-1 block">Padrão: 123456</span>
             </div>
 
             <button type="submit" className="w-full bg-turquoise hover:bg-turquoise-hover text-navy font-bold py-3.5 rounded-xl cursor-pointer transition-all shadow-lg">
@@ -342,14 +413,14 @@ export default function MasterClimaProV5() {
             {!isTecnicoOuAjudante && (
               <button onClick={() => setActiveModule('CLIENTES')} className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl font-semibold cursor-pointer transition-all ${activeModule === 'CLIENTES' ? 'bg-turquoise text-navy font-bold' : 'text-slate-300 hover:bg-navy-light'}`}>
                 <Users className="w-4 h-4" />
-                <span>1. Clientes & Equipamentos</span>
+                <span>1. Clientes & Aparelhos</span>
               </button>
             )}
 
             {isAdmOrGerente && (
               <button onClick={() => setActiveModule('MENSALIDADES')} className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl font-semibold cursor-pointer transition-all ${activeModule === 'MENSALIDADES' ? 'bg-turquoise text-navy font-bold' : 'text-slate-300 hover:bg-navy-light'}`}>
                 <CreditCard className="w-4 h-4" />
-                <span>2. Mensalidades & Contratos</span>
+                <span>2. Mensalidades & Parcelas</span>
               </button>
             )}
 
@@ -380,13 +451,13 @@ export default function MasterClimaProV5() {
             {currentUser.cargo === 'ADMIN' && (
               <button onClick={() => setActiveModule('EQUIPE')} className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl font-semibold cursor-pointer transition-all ${activeModule === 'EQUIPE' ? 'bg-turquoise text-navy font-bold' : 'text-slate-300 hover:bg-navy-light'}`}>
                 <UserCheck className="w-4 h-4" />
-                <span>7. Gestão de Equipe & Acessos</span>
+                <span>7. Gestão de Equipe & Senhas</span>
               </button>
             )}
 
             <button onClick={() => setActiveModule('ASSISTENTE')} className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl font-semibold cursor-pointer transition-all ${activeModule === 'ASSISTENTE' ? 'bg-turquoise text-navy font-bold' : 'text-slate-300 hover:bg-navy-light'}`}>
               <HelpCircle className="w-4 h-4" />
-              <span>8. Assistente Técnico</span>
+              <span>8. Assistente Técnico IA</span>
             </button>
           </nav>
         </div>
@@ -407,7 +478,7 @@ export default function MasterClimaProV5() {
           <div className="bg-amber-50 border border-amber-200 text-amber-900 p-4 rounded-xl text-sm flex items-center space-x-3 shadow-sm">
             <ShieldCheck className="w-6 h-6 text-amber-600 shrink-0" />
             <div>
-              <strong className="font-bold">Modo Campo ({currentUser.cargo}):</strong> Visualização de ordens de serviço, endereços e rotas sem valores financeiros.
+              <strong className="font-bold">Modo Campo ({currentUser.cargo}):</strong> Visualização operacional de ordens de serviço, endereços e rotas.
             </div>
           </div>
         )}
@@ -415,20 +486,20 @@ export default function MasterClimaProV5() {
         {activeModule === 'CLIENTES' && !isTecnicoOuAjudante && (
           <div className="space-y-6">
             <div className="border-b pb-4">
-              <h2 className="text-2xl font-extrabold text-navy">Módulo 1: Gestão de Clientes & Equipamentos</h2>
-              <p className="text-xs text-slate-500">Busca automática ViaCEP e cadastro de aparelhos.</p>
+              <h2 className="text-2xl font-extrabold text-navy">Módulo 1: Gestão de Clientes & Aparelhos</h2>
+              <p className="text-xs text-slate-500">Cadastre clientes, clique para ver o perfil completo e gerenciar aparelhos por cômodo (quarto, sala, etc).</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <form onSubmit={salvarCliente} className="bg-white p-6 rounded-2xl border shadow-sm space-y-4 lg:col-span-1">
                 <h3 className="font-bold text-navy text-sm border-b pb-2 flex items-center space-x-2">
                   <Plus className="w-4 h-4 text-turquoise" />
-                  <span>Cadastrar Novo Cliente</span>
+                  <span>Novo Cliente</span>
                 </h3>
                 <div className="space-y-3 text-xs">
                   <div>
                     <label className="block font-bold text-slate-700 mb-1">Nome / Empresa *</label>
-                    <input type="text" value={nomeCli} onChange={e => setNomeCli(e.target.value)} placeholder="Ex: Escritório Central" required className="w-full p-2.5 border rounded-xl" />
+                    <input type="text" value={nomeCli} onChange={e => setNomeCli(e.target.value)} placeholder="Ex: Maria Silva" required className="w-full p-2.5 border rounded-xl" />
                   </div>
                   <div>
                     <label className="block font-bold text-slate-700 mb-1">Telefone / WhatsApp *</label>
@@ -440,7 +511,7 @@ export default function MasterClimaProV5() {
                     {loadingCep && <span className="text-turquoise mt-1 block">Buscando endereço...</span>}
                   </div>
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1">Endereço</label>
+                    <label className="block font-bold text-slate-700 mb-1">Endereço Completo</label>
                     <input type="text" value={endCli} onChange={e => setEndCli(e.target.value)} placeholder="Rua preenchida automaticamente" className="w-full p-2.5 border rounded-xl bg-slate-50" />
                   </div>
                   <button type="submit" className="w-full bg-turquoise hover:bg-turquoise-hover text-navy font-bold py-3 rounded-xl cursor-pointer shadow-md mt-2">
@@ -450,18 +521,22 @@ export default function MasterClimaProV5() {
               </form>
 
               <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4 lg:col-span-2">
-                <h3 className="font-bold text-navy text-sm border-b pb-2">Clientes Cadastrados ({clientes.length})</h3>
+                <h3 className="font-bold text-navy text-sm border-b pb-2">Clientes Cadastrados ({clientes.length}) — Clique em "Ver Perfil & Aparelhos"</h3>
                 <div className="space-y-3">
                   {clientes.map((c) => (
-                    <div key={c.id} className="border rounded-xl p-4 bg-slate-50 space-y-2">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h4 className="font-bold text-navy text-base">{c.nome}</h4>
-                          <p className="text-xs text-slate-500 flex items-center mt-0.5"><MapPin className="w-3.5 h-3.5 mr-1 text-slate-400" />{c.endereco}</p>
-                          <p className="text-xs text-slate-500 mt-0.5 flex items-center"><Phone className="w-3.5 h-3.5 mr-1 text-slate-400" />{c.telefone}</p>
-                        </div>
-                        <span className="bg-turquoise/20 text-navy text-xs font-bold px-2.5 py-1 rounded-full">{c.equipamentos.length} Aparelho(s)</span>
+                    <div key={c.id} className="border rounded-xl p-4 bg-slate-50 flex justify-between items-center">
+                      <div>
+                        <h4 className="font-bold text-navy text-base">{c.nome}</h4>
+                        <p className="text-xs text-slate-500 flex items-center mt-0.5"><MapPin className="w-3.5 h-3.5 mr-1 text-slate-400" />{c.endereco}</p>
+                        <p className="text-xs text-slate-500 mt-0.5">{c.telefone}</p>
+                        <span className="inline-block mt-2 bg-turquoise/20 text-navy text-[11px] font-bold px-2.5 py-0.5 rounded-full">
+                          {c.equipamentos.length} Aparelho(s) Cadastrado(s)
+                        </span>
                       </div>
+                      <button onClick={() => setClienteVisualizando(c)} className="bg-navy hover:bg-navy-dark text-turquoise font-bold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 cursor-pointer shadow">
+                        <Eye className="w-4 h-4" />
+                        <span>Ver Perfil & Aparelhos</span>
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -473,8 +548,8 @@ export default function MasterClimaProV5() {
         {activeModule === 'MENSALIDADES' && isAdmOrGerente && (
           <div className="space-y-6">
             <div className="border-b pb-4">
-              <h2 className="text-2xl font-extrabold text-navy">Módulo 2: Mensalidades & Contratos (PMOC)</h2>
-              <p className="text-xs text-slate-500">Gerencie contratos de manutenção recorrente.</p>
+              <h2 className="text-2xl font-extrabold text-navy">Módulo 2: Mensalidades & Controle de Parcelas</h2>
+              <p className="text-xs text-slate-500">Acompanhe quais parcelas o cliente já pagou e registre novos contratos PMOC.</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -488,38 +563,51 @@ export default function MasterClimaProV5() {
                     </select>
                   </div>
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1">Tipo</label>
+                    <label className="block font-bold text-slate-700 mb-1">Tipo de Contrato</label>
                     <input type="text" value={mensTipo} onChange={e => setMensTipo(e.target.value)} required className="w-full p-2.5 border rounded-xl" />
                   </div>
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1">Valor (R$)</label>
+                    <label className="block font-bold text-slate-700 mb-1">Valor da Mensalidade (R$)</label>
                     <input type="number" value={mensValor} onChange={e => setMensValor(Number(e.target.value))} required className="w-full p-2.5 border rounded-xl font-bold text-navy" />
                   </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Total de Meses / Parcelas</label>
+                    <input type="number" value={mensTotalParcelas} onChange={e => setMensTotalParcelas(Number(e.target.value))} required className="w-full p-2.5 border rounded-xl font-bold text-navy" />
+                  </div>
                   <button type="submit" className="w-full bg-turquoise hover:bg-turquoise-hover text-navy font-bold py-3 rounded-xl cursor-pointer shadow-md">
-                    Cadastrar Mensalidade
+                    Criar Contrato
                   </button>
                 </div>
               </form>
 
               <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4 lg:col-span-2">
                 <div className="flex justify-between items-center border-b pb-2">
-                  <h3 className="font-bold text-navy text-sm">Contratos Ativos ({mensalidades.length})</h3>
-                  <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">Total: R$ {totalMensalidadesRecebidas.toFixed(2)}/mês</span>
+                  <h3 className="font-bold text-navy text-sm">Contratos & Histórico de Pagamentos ({mensalidades.length})</h3>
+                  <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">Total Recebido/Mês: R$ {totalMensalidadesRecebidas.toFixed(2)}</span>
                 </div>
                 <div className="space-y-3">
-                  {mensalidades.map((m, idx) => (
-                    <div key={idx} className="border rounded-xl p-4 bg-slate-50 flex justify-between items-center">
-                      <div>
-                        <span className="text-[10px] font-mono font-bold bg-navy text-turquoise px-2 py-0.5 rounded">{m.id}</span>
-                        <h4 className="font-bold text-navy text-sm mt-1">{m.cliente}</h4>
-                        <p className="text-xs text-slate-600">{m.tipoContrato}</p>
+                  {mensalidades.map((m) => {
+                    const pagas = m.historicoPagamentos ? m.historicoPagamentos.filter((h: any) => h.status.includes('Pago')).length : 0
+                    return (
+                      <div key={m.id} className="border rounded-xl p-4 bg-slate-50 flex justify-between items-center">
+                        <div>
+                          <span className="text-[10px] font-mono font-bold bg-navy text-turquoise px-2 py-0.5 rounded">{m.id}</span>
+                          <h4 className="font-bold text-navy text-sm mt-1">{m.cliente}</h4>
+                          <p className="text-xs text-slate-600">{m.tipoContrato}</p>
+                          <p className="text-xs font-bold text-emerald-700 mt-1">Parcelas Pagas: {pagas} de {m.totalParcelas}</p>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <div className="text-right">
+                            <p className="text-base font-black text-navy">R$ {m.valorMensal.toFixed(2)}</p>
+                            <span className="text-xs font-bold text-emerald-700">{m.statusPagamento}</span>
+                          </div>
+                          <button onClick={() => setModalDetalheMensalidade(m)} className="bg-navy text-turquoise text-xs font-bold px-3 py-2 rounded-xl cursor-pointer shadow">
+                            Ver Parcelas 📋
+                          </button>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-base font-black text-navy">R$ {m.valorMensal.toFixed(2)}</p>
-                        <span className="text-xs font-bold text-emerald-700">{m.statusPagamento}</span>
-                      </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             </div>
@@ -560,12 +648,11 @@ export default function MasterClimaProV5() {
           </div>
         )}
 
-        {/* 4. ORDENS DE SERVIÇO COM CONCLUSÃO E EXCLUSÃO */}
         {activeModule === 'OS' && (
           <div className="space-y-6">
             <div className="border-b pb-4">
               <h2 className="text-2xl font-extrabold text-navy">Módulo 4: Ordens de Serviço (OS Dupla Segura)</h2>
-              <p className="text-xs text-slate-500">Conclua atendimentos em campo ou exclua registros indesejados.</p>
+              <p className="text-xs text-slate-500">Conclua atendimentos em campo ou exclua registros.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -627,7 +714,7 @@ export default function MasterClimaProV5() {
           <div className="space-y-6">
             <div className="border-b pb-4">
               <h2 className="text-2xl font-extrabold text-navy">Módulo 5: Agenda Automática de Serviços</h2>
-              <p className="text-xs text-slate-500">Calendário de atendimentos agendados.</p>
+              <p className="text-xs text-slate-500">Calendário de atendimentos.</p>
             </div>
             <div className="bg-white rounded-2xl border p-6 space-y-4">
               {ordensServico.map((item, idx) => (
@@ -656,7 +743,7 @@ export default function MasterClimaProV5() {
                 <p className="text-3xl font-black text-navy mt-1">R$ {totalEntradaFaturamento.toFixed(2)}</p>
               </div>
               <div className="bg-white p-5 rounded-2xl border shadow-sm">
-                <span className="text-xs font-bold text-slate-500 uppercase">Mensalidades Recorrentes</span>
+                <span className="text-xs font-bold text-slate-500 uppercase">Mensalidades Recebidas</span>
                 <p className="text-3xl font-black text-emerald-600 mt-1">R$ {totalMensalidadesRecebidas.toFixed(2)}</p>
               </div>
               <div className="bg-white p-5 rounded-2xl border shadow-sm">
@@ -667,12 +754,11 @@ export default function MasterClimaProV5() {
           </div>
         )}
 
-        {/* 7. GESTÃO DE EQUIPE COM ADIÇÃO E EXCLUSÃO REAIS */}
         {activeModule === 'EQUIPE' && currentUser.cargo === 'ADMIN' && (
           <div className="space-y-6">
             <div className="border-b pb-4">
-              <h2 className="text-2xl font-extrabold text-navy">Módulo 7: Gestão de Equipe & Acessos</h2>
-              <p className="text-xs text-slate-500">Adicione novos funcionários (Técnicos, Ajudantes, Secretárias) ou remova acessos.</p>
+              <h2 className="text-2xl font-extrabold text-navy">Módulo 7: Gestão de Equipe, Acessos & Senhas</h2>
+              <p className="text-xs text-slate-500">Cadastre novos funcionários, defina senhas de acesso e edite quando precisar.</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -691,6 +777,10 @@ export default function MasterClimaProV5() {
                     <input type="email" value={novoEmailFunc} onChange={e => setNovoEmailFunc(e.target.value)} placeholder="roberto@nando.climatizacao" required className="w-full p-2.5 border rounded-xl" />
                   </div>
                   <div>
+                    <label className="block font-bold text-slate-700 mb-1">Senha de Acesso *</label>
+                    <input type="text" value={novaSenhaFunc} onChange={e => setNovaSenhaFunc(e.target.value)} placeholder="123456" required className="w-full p-2.5 border rounded-xl font-mono" />
+                  </div>
+                  <div>
                     <label className="block font-bold text-slate-700 mb-1">Cargo / Permissão</label>
                     <select value={novoCargoFunc} onChange={e => setNovoCargoFunc(e.target.value)} className="w-full p-2.5 border rounded-xl bg-white font-semibold">
                       <option value="GERENTE">Gerente</option>
@@ -706,19 +796,26 @@ export default function MasterClimaProV5() {
               </form>
 
               <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4 lg:col-span-2">
-                <h3 className="font-bold text-navy text-sm border-b pb-2">Equipe Ativa ({equipe.length})</h3>
+                <h3 className="font-bold text-navy text-sm border-b pb-2">Equipe Ativa & Senhas ({equipe.length})</h3>
                 <div className="space-y-3">
                   {equipe.map((func) => (
                     <div key={func.id} className="border rounded-xl p-4 bg-slate-50 flex justify-between items-center">
                       <div>
                         <h4 className="font-bold text-navy text-sm">{func.nome}</h4>
                         <p className="text-xs text-slate-500">{func.email} — <strong className="text-turquoise">{func.cargo}</strong></p>
+                        <p className="text-[11px] font-mono text-slate-400 mt-0.5">Senha atual: {func.senha || '123456'}</p>
                       </div>
-                      {func.cargo !== 'ADMIN' && (
-                        <button onClick={() => excluirFuncionario(func.id)} className="bg-rose-100 hover:bg-rose-200 text-rose-700 p-2 rounded-lg cursor-pointer" title="Remover Funcionário">
-                          <Trash2 className="w-4 h-4" />
+                      <div className="flex items-center space-x-2">
+                        <button onClick={() => setFuncEditando(func)} className="bg-navy text-turquoise text-xs font-bold px-3 py-2 rounded-lg cursor-pointer flex items-center space-x-1 shadow">
+                          <Edit3 className="w-3.5 h-3.5" />
+                          <span>Editar Senha</span>
                         </button>
-                      )}
+                        {func.cargo !== 'ADMIN' && (
+                          <button onClick={() => excluirFuncionario(func.id)} className="bg-rose-100 hover:bg-rose-200 text-rose-700 p-2 rounded-lg cursor-pointer" title="Remover">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -727,12 +824,11 @@ export default function MasterClimaProV5() {
           </div>
         )}
 
-        {/* 8. ASSISTENTE TÉCNICO INTELIGENTE COM BUSCA / DIGITAÇÃO DE ERROS */}
         {activeModule === 'ASSISTENTE' && (
           <div className="space-y-6">
             <div className="border-b pb-4">
-              <h2 className="text-2xl font-extrabold text-navy">Módulo 8: Assistente Técnico Inteligente</h2>
-              <p className="text-xs text-slate-500">Digite o código de erro, marca ou sintoma para encontrar a solução imediatamente.</p>
+              <h2 className="text-2xl font-extrabold text-navy">Módulo 8: Assistente Técnico IA Avançado</h2>
+              <p className="text-xs text-slate-500">Digite qualquer dúvida, sintoma ("não gela", "barulho", "vazando água") ou código de erro (E6, EC, F1)...</p>
             </div>
 
             <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
@@ -742,7 +838,7 @@ export default function MasterClimaProV5() {
                   type="text" 
                   value={buscaErro} 
                   onChange={e => setBuscaErro(e.target.value)} 
-                  placeholder="Digite o código (ex: E6, EC, F1) ou marca (Fujitsu, Midea)..." 
+                  placeholder="Ex: Ar condicionado Elgin não gela, erro E6, barulho na condensadora..." 
                   className="w-full pl-11 pr-4 py-3 border rounded-xl text-sm font-semibold focus:ring-2 focus:ring-turquoise"
                 />
               </div>
@@ -752,18 +848,17 @@ export default function MasterClimaProV5() {
                   errosFiltrados.map((err, i) => (
                     <div key={i} className="border rounded-xl p-4 bg-slate-50 space-y-2">
                       <div className="flex justify-between items-center border-b pb-2">
-                        <span className="font-bold text-navy text-sm">{err.marca}</span>
-                        <span className="bg-rose-100 text-rose-800 font-mono font-black text-xs px-2.5 py-1 rounded-full">{err.codigo}</span>
+                        <span className="font-bold text-navy text-sm">{err.titulo}</span>
                       </div>
-                      <h4 className="font-bold text-slate-800 text-xs">{err.titulo}</h4>
-                      <p className="text-xs text-slate-600 bg-white p-3 rounded-lg border">
-                        <strong className="text-navy">Solução Recomendada:</strong> {err.solucao}
+                      <p className="text-xs text-slate-700 bg-white p-3 rounded-lg border leading-relaxed">
+                        <strong className="text-navy">Solução / Diagnóstico:</strong> {err.solucao}
                       </p>
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-8 text-slate-400 text-xs">
-                    Nenhum erro encontrado para "{buscaErro}". Tente digitar outro código ou marca.
+                  <div className="text-center py-8 text-slate-500 text-xs space-y-2">
+                    <p className="font-bold text-navy text-sm">💡 Dica da IA ClimaPro:</p>
+                    <p>O assistente compreende termos livres como "não gela", "vazando água", "barulho", ou marcas como "Fujitsu", "Midea", "Daikin", "Elgin", "Brastemp". Tente digitar o problema com suas palavras!</p>
                   </div>
                 )}
               </div>
@@ -771,6 +866,170 @@ export default function MasterClimaProV5() {
           </div>
         )}
       </main>
+
+      {clienteVisualizando && (
+        <div className="fixed inset-0 bg-navy/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b pb-4">
+              <div>
+                <span className="text-[10px] font-mono font-bold bg-turquoise/20 text-navy px-2.5 py-0.5 rounded">Ficha do Cliente</span>
+                <h3 className="text-xl font-black text-navy mt-1">{clienteVisualizando.nome}</h3>
+              </div>
+              <button onClick={() => setClienteVisualizando(null)} className="text-slate-400 hover:text-slate-600 p-2 cursor-pointer">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-slate-50 p-4 rounded-2xl border">
+              <div>
+                <strong className="text-slate-500 block uppercase text-[10px]">Telefone / WhatsApp</strong>
+                <p className="font-bold text-navy text-sm mt-0.5">{clienteVisualizando.telefone}</p>
+              </div>
+              <div>
+                <strong className="text-slate-500 block uppercase text-[10px]">Endereço</strong>
+                <p className="font-bold text-navy text-sm mt-0.5">{clienteVisualizando.endereco}</p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <h4 className="font-bold text-navy text-sm">Aparelhos Instalados ({clienteVisualizando.equipamentos.length})</h4>
+              </div>
+
+              <div className="space-y-2">
+                {clienteVisualizando.equipamentos.length > 0 ? (
+                  clienteVisualizando.equipamentos.map((ap: any) => (
+                    <div key={ap.id} className="border rounded-xl p-3 bg-slate-50 flex justify-between items-center text-xs">
+                      <div>
+                        <strong className="text-navy text-sm">{ap.tipo} — {ap.marca} ({ap.btu})</strong>
+                        <p className="text-slate-500 mt-0.5">📍 Local instalado: <strong className="text-turquoise">{ap.local}</strong></p>
+                      </div>
+                      <button onClick={() => removerAparelhoCliente(clienteVisualizando.id, ap.id)} className="text-rose-600 hover:text-rose-700 p-2 cursor-pointer" title="Remover Aparelho">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-xs text-slate-400 py-3 text-center bg-slate-50 rounded-xl">Nenhum aparelho cadastrado para este cliente ainda.</p>
+                )}
+              </div>
+            </div>
+
+            <div className="border-t pt-4 space-y-3">
+              <h4 className="font-bold text-navy text-xs uppercase">Adicionar Aparelho ao Cliente</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Tipo</label>
+                  <select value={novoTipoEq} onChange={e => setNovoTipoEq(e.target.value)} className="w-full p-2.5 border rounded-xl bg-white font-semibold">
+                    <option value="Split Hi-Wall">Split Hi-Wall</option>
+                    <option value="Split Inverter">Split Inverter</option>
+                    <option value="Split Cassete">Split Cassete</option>
+                    <option value="Piso Teto">Piso Teto</option>
+                    <option value="Geladeira / Freezer">Geladeira / Freezer</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Marca</label>
+                  <input type="text" value={novaMarcaEq} onChange={e => setNovaMarcaEq(e.target.value)} placeholder="Ex: Fujitsu, Midea" className="w-full p-2.5 border rounded-xl" />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Capacidade (BTU)</label>
+                  <input type="text" value={novoBtuEq} onChange={e => setNovoBtuEq(e.target.value)} placeholder="Ex: 12.000 BTU" className="w-full p-2.5 border rounded-xl" />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Local / Cômodo</label>
+                  <input type="text" value={novoLocalEq} onChange={e => setNovoLocalEq(e.target.value)} placeholder="Ex: Quarto Casal, Sala, Cozinha" className="w-full p-2.5 border rounded-xl" />
+                </div>
+              </div>
+              <button onClick={() => adicionarAparelhoCliente(clienteVisualizando.id)} className="w-full bg-turquoise hover:bg-turquoise-hover text-navy font-bold py-3 rounded-xl text-xs cursor-pointer shadow mt-2">
+                Adicionar Aparelho no Local
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {modalDetalheMensalidade && (
+        <div className="fixed inset-0 bg-navy/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b pb-4">
+              <div>
+                <span className="text-[10px] font-mono font-bold bg-navy text-turquoise px-2.5 py-0.5 rounded">Contrato {modalDetalheMensalidade.id}</span>
+                <h3 className="text-xl font-black text-navy mt-1">{modalDetalheMensalidade.cliente}</h3>
+              </div>
+              <button onClick={() => setModalDetalheMensalidade(null)} className="text-slate-400 hover:text-slate-600 p-2 cursor-pointer">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <p><strong className="text-slate-600">Tipo:</strong> {modalDetalheMensalidade.tipoContrato}</p>
+              <p><strong className="text-slate-600">Valor Mensal:</strong> R$ {modalDetalheMensalidade.valorMensal.toFixed(2)}</p>
+              <p className="font-bold text-emerald-700">Parcelas Quitadas: {modalDetalheMensalidade.parcelasPagas} de {modalDetalheMensalidade.totalParcelas}</p>
+            </div>
+
+            <div className="space-y-2 border-t pt-4">
+              <h4 className="font-bold text-navy text-xs uppercase">Clique na parcela para marcar como Paga ou Pendente:</h4>
+              <div className="space-y-2 max-h-60 overflow-y-auto">
+                {modalDetalheMensalidade.historicoPagamentos.map((parc: any, index: number) => (
+                  <div key={index} className="border rounded-xl p-3 bg-slate-50 flex justify-between items-center text-xs">
+                    <div>
+                      <strong className="text-navy">{parc.mes}</strong>
+                      <p className="text-slate-500">Valor: R$ {parc.valor.toFixed(2)}</p>
+                    </div>
+                    <button 
+                      onClick={() => alternarStatusParcela(modalDetalheMensalidade.id, index)}
+                      className={`px-3 py-1.5 rounded-lg font-bold cursor-pointer text-xs ${parc.status.includes('Pago') ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}
+                    >
+                      {parc.status}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {funcEditando && (
+        <div className="fixed inset-0 bg-navy/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-6 shadow-2xl">
+            <div className="flex justify-between items-center border-b pb-4">
+              <h3 className="text-xl font-black text-navy">Editar Funcionário & Senha</h3>
+              <button onClick={() => setFuncEditando(null)} className="text-slate-400 hover:text-slate-600 p-2 cursor-pointer">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <form onSubmit={salvarEdicaoFuncionario} className="space-y-4 text-xs">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Nome</label>
+                <input type="text" value={funcEditando.nome} onChange={e => setFuncEditando({ ...funcEditando, nome: e.target.value })} required className="w-full p-2.5 border rounded-xl" />
+              </div>
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">E-mail de Login</label>
+                <input type="email" value={funcEditando.email} onChange={e => setFuncEditando({ ...funcEditando, email: e.target.value })} required className="w-full p-2.5 border rounded-xl" />
+              </div>
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Nova Senha de Acesso</label>
+                <input type="text" value={funcEditando.senha || ''} onChange={e => setFuncEditando({ ...funcEditando, senha: e.target.value })} placeholder="Digite a nova senha" required className="w-full p-2.5 border rounded-xl font-mono font-bold" />
+              </div>
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Cargo</label>
+                <select value={funcEditando.cargo} onChange={e => setFuncEditando({ ...funcEditando, cargo: e.target.value })} className="w-full p-2.5 border rounded-xl bg-white font-semibold">
+                  <option value="GERENTE">Gerente</option>
+                  <option value="SECRETARIA">Secretária</option>
+                  <option value="TECNICO">Técnico</option>
+                  <option value="AJUDANTE">Ajudante</option>
+                </select>
+              </div>
+              <button type="submit" className="w-full bg-turquoise hover:bg-turquoise-hover text-navy font-bold py-3 rounded-xl cursor-pointer shadow">
+                Salvar Alterações
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
