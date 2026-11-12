@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   Users, 
   FileText, 
@@ -21,10 +21,11 @@ import {
   UserCheck,
   Package,
   Printer,
-  Phone
+  Phone,
+  CheckCircle2
 } from 'lucide-react'
 
-export default function MasterClimaProV9() {
+export default function MasterClimaProV10() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [currentUser, setCurrentUser] = useState({
     nome: 'Nando (Administrador)',
@@ -35,31 +36,157 @@ export default function MasterClimaProV9() {
   const [loginEmail, setLoginEmail] = useState('admin@nando.climatizacao')
   const [loginSenha, setLoginSenha] = useState('123456')
 
-  const [activeModule, setActiveModule] = useState<'CLIENTES' | 'ESTOQUE' | 'ORCAMENTOS' | 'OS' | 'AGENDA' | 'FINANCEIRO' | 'MENSALIDADES' | 'EQUIPE' | 'ASSISTENTE'>('ESTOQUE')
+  const [activeModule, setActiveModule] = useState<'CLIENTES' | 'ESTOQUE' | 'ORCAMENTOS' | 'OS' | 'AGENDA' | 'FINANCEIRO' | 'MENSALIDADES' | 'EQUIPE' | 'ASSISTENTE'>('OS')
 
-  // Equipe
-  const [equipe, setEquipe] = useState([
-    { id: 1, nome: 'Nando', cargo: 'ADMIN', email: 'admin@nando.climatizacao', senha: '123' },
-    { id: 2, nome: 'Carlos Souza', cargo: 'GERENTE', email: 'gerente@nando.climatizacao', senha: '123' },
-    { id: 3, nome: 'Ana Secretária', cargo: 'SECRETARIA', email: 'secretaria@nando.climatizacao', senha: '123' },
-    { id: 4, nome: 'João Técnico', cargo: 'TECNICO', email: 'tecnico@nando.climatizacao', senha: '123' },
-    { id: 5, nome: 'Pedrinho Ajudante', cargo: 'AJUDANTE', email: 'ajudante@nando.climatizacao', senha: '123' },
-  ])
+  // Estado Inicial com persistência no LocalStorage para NUNCA perder dados ao sair
+  const [equipe, setEquipe] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const salvo = localStorage.getItem('nando_equipe')
+      if (salvo) return JSON.parse(salvo)
+    }
+    return [
+      { id: 1, nome: 'Nando', cargo: 'ADMIN', email: 'admin@nando.climatizacao', senha: '123' },
+      { id: 2, nome: 'Carlos Souza', cargo: 'GERENTE', email: 'gerente@nando.climatizacao', senha: '123' },
+      { id: 3, nome: 'Ana Secretária', cargo: 'SECRETARIA', email: 'secretaria@nando.climatizacao', senha: '123' },
+      { id: 4, nome: 'João Técnico', cargo: 'TECNICO', email: 'tecnico@nando.climatizacao', senha: '123' },
+      { id: 5, nome: 'Pedrinho Ajudante', cargo: 'AJUDANTE', email: 'ajudante@nando.climatizacao', senha: '123' },
+    ]
+  })
 
+  const [estoque, setEstoque] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const salvo = localStorage.getItem('nando_estoque')
+      if (salvo) return JSON.parse(salvo)
+    }
+    return [
+      { id: 1, nome: 'Gás Refrigerante R410A', unidade: 'kg', quantidade: 15, precoCusto: 50.00, precoVenda: 80.00, codigo: 'GAS-R410' },
+      { id: 2, nome: 'Cabo PP 3x2.5mm', unidade: 'm', quantidade: 100, precoCusto: 4.00, precoVenda: 8.50, codigo: 'CABO-PP' },
+      { id: 3, nome: 'Tubulação de Cobre 1/4', unidade: 'm', quantidade: 50, precoCusto: 15.00, precoVenda: 30.00, codigo: 'TUB-14' },
+      { id: 4, nome: 'Tubulação de Cobre 3/8', unidade: 'm', quantidade: 40, precoCusto: 20.00, precoVenda: 40.00, codigo: 'TUB-38' },
+      { id: 5, nome: 'Capacitor 35uF 450V', unidade: 'un', quantidade: 10, precoCusto: 22.00, precoVenda: 45.00, codigo: 'CAP-35' }
+    ]
+  })
+
+  const [clientes, setClientes] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const salvo = localStorage.getItem('nando_clientes')
+      if (salvo) return JSON.parse(salvo)
+    }
+    return [
+      {
+        id: 1,
+        nome: 'Supermercado Central',
+        telefone: '(14) 99111-2222',
+        cep: '17013000',
+        endereco: 'Av. Brasil, 450 - Centro, Bauru - SP',
+        equipamentos: [
+          { id: 101, tipo: 'Split Cassete', marca: 'Elgin', btu: '36.000 BTU', local: 'Salão Principal' }
+        ]
+      }
+    ]
+  })
+
+  const [mensalidades, setMensalidades] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const salvo = localStorage.getItem('nando_mensalidades')
+      if (salvo) return JSON.parse(salvo)
+    }
+    return [
+      {
+        id: 'MENS-01',
+        cliente: 'Supermercado Central',
+        tipoContrato: 'Contrato PMOC Comercial (Mensal)',
+        valorMensal: 350.00,
+        vencimento: 'Dia 10 de cada mês',
+        statusPagamento: 'Em Dia 🟢',
+        totalParcelas: 12,
+        parcelasPagas: 4,
+        historicoPagamentos: [
+          { mes: 'Janeiro/2026', valor: 350, status: 'Pago ✅' },
+          { mes: 'Fevereiro/2026', valor: 350, status: 'Pago ✅' },
+          { mes: 'Março/2026', valor: 350, status: 'Pago ✅' },
+          { mes: 'Abril/2026', valor: 350, status: 'Pago ✅' }
+        ]
+      }
+    ]
+  })
+
+  const [orcamentos, setOrcamentos] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const salvo = localStorage.getItem('nando_orcamentos')
+      if (salvo) return JSON.parse(salvo)
+    }
+    return [
+      {
+        id: 'ORC-2026-01',
+        cliente: 'Supermercado Central',
+        equipamento: 'Split Hi-Wall 12.000 BTU',
+        servicoDescricao: 'Instalação Completa',
+        maoDeObra: 250.00,
+        itensOrcamento: [
+          { pecaId: 2, nome: 'Cabo PP 3x2.5mm', unidade: 'm', quantidade: 3, valorUnitario: 8.50, total: 25.50 }
+        ],
+        total: 275.50,
+        status: 'Aguardando Aprovação'
+      }
+    ]
+  })
+
+  const [ordensServico, setOrdensServico] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const salvo = localStorage.getItem('nando_os')
+      if (salvo) return JSON.parse(salvo)
+    }
+    return [
+      {
+        id: 'OS-2026-089',
+        cliente: 'Supermercado Central',
+        telefone: '(14) 99111-2222',
+        endereco: 'Av. Brasil, 450 - Centro, Bauru - SP',
+        equipamento: 'Split Hi-Wall 12.000 BTU',
+        servico: 'Instalação Completa',
+        valorServico: 250,
+        pecasUtilizadas: [
+          { pecaId: 2, nome: 'Cabo PP 3x2.5mm', unidade: 'm', quantidade: 3, valorUnitario: 8.50, total: 25.50 }
+        ],
+        valorTotal: 275.50,
+        status: 'Em Andamento',
+        dataAgendamento: '2026-11-12'
+      }
+    ]
+  })
+
+  // Salvar automaticamente no LocalStorage sempre que houver alteração
+  useEffect(() => {
+    localStorage.setItem('nando_equipe', JSON.stringify(equipe))
+  }, [equipe])
+
+  useEffect(() => {
+    localStorage.setItem('nando_estoque', JSON.stringify(estoque))
+  }, [estoque])
+
+  useEffect(() => {
+    localStorage.setItem('nando_clientes', JSON.stringify(clientes))
+  }, [clientes])
+
+  useEffect(() => {
+    localStorage.setItem('nando_mensalidades', JSON.stringify(mensalidades))
+  }, [mensalidades])
+
+  useEffect(() => {
+    localStorage.setItem('nando_orcamentos', JSON.stringify(orcamentos))
+  }, [orcamentos])
+
+  useEffect(() => {
+    localStorage.setItem('nando_os', JSON.stringify(ordensServico))
+  }, [ordensServico])
+
+  // Estados de formulários e modais
   const [novoNomeFunc, setNovoNomeFunc] = useState('')
   const [novoEmailFunc, setNovoEmailFunc] = useState('')
   const [novoCargoFunc, setNovoCargoFunc] = useState('TECNICO')
   const [novaSenhaFunc, setNovaSenhaFunc] = useState('123456')
   const [funcEditando, setFuncEditando] = useState<any | null>(null)
-
-  // Estoque Inteligente (Com Custo, Venda e Unidade de Medida: metros, kg, un, g)
-  const [estoque, setEstoque] = useState([
-    { id: 1, nome: 'Gás Refrigerante R410A', unidade: 'kg', quantidade: 15, precoCusto: 50.00, precoVenda: 80.00, codigo: 'GAS-R410' },
-    { id: 2, nome: 'Cabo PP 3x2.5mm', unidade: 'm', quantidade: 100, precoCusto: 4.00, precoVenda: 8.50, codigo: 'CABO-PP' },
-    { id: 3, nome: 'Tubulação de Cobre 1/4', unidade: 'm', quantidade: 50, precoCusto: 15.00, precoVenda: 30.00, codigo: 'TUB-14' },
-    { id: 4, nome: 'Tubulação de Cobre 3/8', unidade: 'm', quantidade: 40, precoCusto: 20.00, precoVenda: 40.00, codigo: 'TUB-38' },
-    { id: 5, nome: 'Capacitor 35uF 450V', unidade: 'un', quantidade: 10, precoCusto: 22.00, precoVenda: 45.00, codigo: 'CAP-35' }
-  ])
 
   const [novoNomePeca, setNovoNomePeca] = useState('')
   const [novoCodigoPeca, setNovoCodigoPeca] = useState('')
@@ -68,20 +195,6 @@ export default function MasterClimaProV9() {
   const [novoCustoPeca, setNovoCustoPeca] = useState<number>(20)
   const [novoVendaPeca, setNovoVendaPeca] = useState<number>(40)
   const [pecaEditando, setPecaEditando] = useState<any | null>(null)
-
-  // Clientes & Aparelhos
-  const [clientes, setClientes] = useState([
-    {
-      id: 1,
-      nome: 'Supermercado Central',
-      telefone: '(14) 99111-2222',
-      cep: '17013000',
-      endereco: 'Av. Brasil, 450 - Centro, Bauru - SP',
-      equipamentos: [
-        { id: 101, tipo: 'Split Cassete', marca: 'Elgin', btu: '36.000 BTU', local: 'Salão Principal' }
-      ]
-    }
-  ])
 
   const [clienteVisualizando, setClienteVisualizando] = useState<any | null>(null)
   const [novoTipoEq, setNovoTipoEq] = useState('Split Hi-Wall')
@@ -95,47 +208,11 @@ export default function MasterClimaProV9() {
   const [endCli, setEndCli] = useState('')
   const [loadingCep, setLoadingCep] = useState(false)
 
-  // Mensalidades & Contratos PMOC
-  const [mensalidades, setMensalidades] = useState([
-    {
-      id: 'MENS-01',
-      cliente: 'Supermercado Central',
-      tipoContrato: 'Contrato PMOC Comercial (Mensal)',
-      valorMensal: 350.00,
-      vencimento: 'Dia 10 de cada mês',
-      statusPagamento: 'Em Dia 🟢',
-      totalParcelas: 12,
-      parcelasPagas: 4,
-      historicoPagamentos: [
-        { mes: 'Janeiro/2026', valor: 350, status: 'Pago ✅' },
-        { mes: 'Fevereiro/2026', valor: 350, status: 'Pago ✅' },
-        { mes: 'Março/2026', valor: 350, status: 'Pago ✅' },
-        { mes: 'Abril/2026', valor: 350, status: 'Pago ✅' }
-      ]
-    }
-  ])
-
   const [mensCliente, setMensCliente] = useState('Supermercado Central')
   const [mensTipo, setMensTipo] = useState('Contrato PMOC Comercial')
   const [mensValor, setMensValor] = useState<number>(350)
   const [mensTotalParcelas, setMensTotalParcelas] = useState<number>(12)
   const [modalDetalheMensalidade, setModalDetalheMensalidade] = useState<any | null>(null)
-
-  // Orçamentos
-  const [orcamentos, setOrcamentos] = useState([
-    {
-      id: 'ORC-2026-01',
-      cliente: 'Supermercado Central',
-      equipamento: 'Split Hi-Wall 12.000 BTU',
-      servicoDescricao: 'Instalação Completa',
-      maoDeObra: 250.00,
-      itensOrcamento: [
-        { pecaId: 2, nome: 'Cabo PP 3x2.5mm', unidade: 'm', quantidade: 3, valorUnitario: 8.50, total: 25.50 }
-      ],
-      total: 275.50,
-      status: 'Aguardando Aprovação'
-    }
-  ])
 
   const [orcCliente, setOrcCliente] = useState('Supermercado Central')
   const [orcEquipamento, setOrcEquipamento] = useState('Split Hi-Wall 12.000 BTU')
@@ -145,25 +222,6 @@ export default function MasterClimaProV9() {
   const [pecaOrcId, setPecaOrcId] = useState<number>(2)
   const [qtdOrcPeca, setQtdOrcPeca] = useState<number>(3)
   const [orcEditando, setOrcEditando] = useState<any | null>(null)
-
-  // Ordens de Serviço (OS)
-  const [ordensServico, setOrdensServico] = useState([
-    {
-      id: 'OS-2026-089',
-      cliente: 'Supermercado Central',
-      telefone: '(14) 99111-2222',
-      endereco: 'Av. Brasil, 450 - Centro, Bauru - SP',
-      equipamento: 'Split Hi-Wall 12.000 BTU',
-      servico: 'Instalação Completa',
-      valorServico: 250,
-      pecasUtilizadas: [
-        { pecaId: 2, nome: 'Cabo PP 3x2.5mm', unidade: 'm', quantidade: 3, valorUnitario: 8.50, total: 25.50 }
-      ],
-      valorTotal: 275.50,
-      status: 'Em Andamento',
-      dataAgendamento: '2026-11-12'
-    }
-  ])
 
   const [osEditandoPecas, setOsEditandoPecas] = useState<any | null>(null)
   const [pecaSelecionadaId, setPecaSelecionadaId] = useState<number>(2)
@@ -175,7 +233,7 @@ export default function MasterClimaProV9() {
   const baseConhecimentoGeral = [
     { termos: ['fujitsu', 'e6', 'comunicacao'], titulo: 'Erro E6 - Fujitsu Inverter (Comunicação)', solucao: 'Erro de comunicação entre evaporadora e condensadora. Verifique a tensão L/N de 220V e o cabo de sinal blindado.' },
     { termos: ['midea', 'carrier', 'ec', 'gas', 'vazamento'], titulo: 'Erro EC - Midea / Carrier (Vazamento ou Baixa Pressão)', solucao: 'Indica possível falta de fluido refrigerante ou bloqueio na linha. Conecte o manifold digital.' },
-    { termos: ['gelando', 'nao gela', 'frio'], titulo: 'Diagnóstico Geral: Aparelho Não Gela', solucao: '1. Verifique filtros de ar. 2. Confira se o compressor armada. 3. Meça pressões de sucção.' }
+    { termos: ['gelando', 'nao gela', 'frio'], titulo: 'Diagnóstico Geral: Aparelho Não Gela', solucao: '1. Verifique filtros de ar. 2. Confira se o compressor arma. 3. Meça pressões de sucção.' }
   ]
 
   const errosFiltrados = baseConhecimentoGeral.filter(item => {
@@ -219,7 +277,7 @@ export default function MasterClimaProV9() {
     const novo = { id: clientes.length + 1, nome: nomeCli, telefone: telCli, cep: cepCli, endereco: endCli || 'Endereço não informado', equipamentos: [] }
     setClientes([...clientes, novo])
     setNomeCli(''); setTelCli(''); setCepCli(''); setEndCli('')
-    alert('Cliente cadastrado!')
+    alert('Cliente cadastrado e salvo com sucesso!')
   }
 
   const adicionarAparelhoCliente = (clienteId: number) => {
@@ -247,7 +305,7 @@ export default function MasterClimaProV9() {
     }))
   }
 
-  // Estoque Inteligente (Adicionar, Editar com Custo x Venda e Unidade)
+  // Estoque
   const adicionarPecaEstoque = (e: React.FormEvent) => {
     e.preventDefault()
     if (!novoNomePeca) return
@@ -270,14 +328,14 @@ export default function MasterClimaProV9() {
     if (!pecaEditando) return
     setEstoque(estoque.map(p => p.id === pecaEditando.id ? pecaEditando : p))
     setPecaEditando(null)
-    alert('Estoque atualizado com sucesso!')
+    alert('Estoque atualizado!')
   }
 
   const excluirPecaEstoque = (id: number) => {
     if (confirm('Deseja remover este item?')) setEstoque(estoque.filter(p => p.id !== id))
   }
 
-  // Orçamentos com Itens Inteligentes (Metros, kg, un)
+  // Orçamentos
   const adicionarItemOrcamentoTemp = () => {
     const pObj = estoque.find(p => p.id === Number(pecaOrcId))
     if (!pObj) return
@@ -327,7 +385,6 @@ export default function MasterClimaProV9() {
     const orc = orcamentos.find(o => o.id === orcId)
     if (!orc) return
 
-    // Baixa automática no estoque considerando fração (metros, kg, un)
     for (const item of orc.itensOrcamento) {
       const pEstoque = estoque.find(p => p.id === item.pecaId)
       if (pEstoque) {
@@ -354,7 +411,7 @@ export default function MasterClimaProV9() {
     alert('Orçamento aprovado, convertido em OS e estoque baixado!')
   }
 
-  // Baixa manual de peças na OS
+  // OS
   const adicionarPecaNaOS = (osId: string) => {
     const pecaObj = estoque.find(p => p.id === Number(pecaSelecionadaId))
     if (!pecaObj) return
@@ -486,8 +543,8 @@ export default function MasterClimaProV9() {
             <div className="bg-turquoise p-3 rounded-2xl w-14 h-14 mx-auto flex items-center justify-center text-navy font-black shadow-lg">
               <Wrench className="w-8 h-8" />
             </div>
-            <h1 className="text-2xl font-black">Nando's <span className="text-turquoise">ClimaPro V9</span></h1>
-            <p className="text-xs text-slate-400">Sistema Master Definitivo</p>
+            <h1 className="text-2xl font-black">Nando's <span className="text-turquoise">ClimaPro V10</span></h1>
+            <p className="text-xs text-slate-400">Sistema Master com Salvamento Automático</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4 text-sm">
@@ -557,7 +614,7 @@ export default function MasterClimaProV9() {
             {!isTecnicoOuAjudante && (
               <button onClick={() => setActiveModule('ORCAMENTOS')} className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl font-semibold cursor-pointer ${activeModule === 'ORCAMENTOS' ? 'bg-turquoise text-navy font-bold' : 'text-slate-300 hover:bg-navy-light'}`}>
                 <FileText className="w-4 h-4" />
-                <span>5. Orçamentos com Metros/Peças</span>
+                <span>5. Orçamentos Inteligentes</span>
               </button>
             )}
 
@@ -588,6 +645,10 @@ export default function MasterClimaProV9() {
         </div>
 
         <div className="pt-4 border-t border-navy-light text-xs space-y-2">
+          <div className="flex items-center space-x-1.5 text-emerald-400 font-bold">
+            <CheckCircle2 className="w-4 h-4" />
+            <span>Dados Salvos Automáticos</span>
+          </div>
           <div className="flex justify-between items-center text-slate-300">
             <span>{currentUser.nome}</span>
             <button onClick={() => setIsLoggedIn(false)} className="text-rose-400 font-bold flex items-center space-x-1 cursor-pointer">
@@ -625,7 +686,7 @@ export default function MasterClimaProV9() {
                     
                     <div className="bg-slate-50 p-3 rounded-xl border space-y-2">
                       <div className="flex justify-between items-center">
-                        <strong className="text-navy text-xs flex items-center"><Package className="w-3.5 h-3.5 mr-1 text-turquoise" /> Itens / Metros Usados:</strong>
+                        <strong className="text-navy text-xs flex items-center"><Package className="w-3.5 h-3.5 mr-1 text-turquoise" /> Itens / Medidas Usadas:</strong>
                         {!isTecnicoOuAjudante && (
                           <button onClick={() => setOsEditandoPecas(os)} className="text-[11px] bg-turquoise/20 text-navy font-bold px-2 py-1 rounded-lg cursor-pointer">
                             + Add Item/Metro
@@ -679,7 +740,7 @@ export default function MasterClimaProV9() {
           <div className="space-y-6">
             <div className="border-b pb-4">
               <h2 className="text-2xl font-extrabold text-navy">Módulo 2: Estoque Inteligente (Custo x Venda + Unidade)</h2>
-              <p className="text-xs text-slate-500">Cadastre o item, defina se é metros (m), quilos (kg), gramas (g) ou unidades (un), e informe o valor pago e o cobrado.</p>
+              <p className="text-xs text-slate-500">Cadastre tubos por metros (m), gás por quilo/grama (kg/g) ou peças por unidade (un).</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -855,12 +916,12 @@ export default function MasterClimaProV9() {
           </div>
         )}
 
-        {/* MÓDULO 5: ORÇAMENTOS COM METROS / PEÇAS */}
+        {/* MÓDULO 5: ORÇAMENTOS */}
         {activeModule === 'ORCAMENTOS' && !isTecnicoOuAjudante && (
           <div className="space-y-6">
             <div className="border-b pb-4">
               <h2 className="text-2xl font-extrabold text-navy">Módulo 5: Orçamentos Inteligentes</h2>
-              <p className="text-xs text-slate-500">Digite quantos metros, quilos ou unidades o cliente precisa. O sistema calcula automaticamente.</p>
+              <p className="text-xs text-slate-500">Adicione metros, kg ou unidades. O sistema calcula automaticamente o total.</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -1103,7 +1164,7 @@ export default function MasterClimaProV9() {
                 </select>
               </div>
               <div>
-                <label className="block font-bold mb-1">Quantidade / Metros</label>
+                <label className="block font-bold mb-1">Quantidade / Medida</label>
                 <input type="number" step="0.1" min={0.1} value={qtdPecaOS} onChange={e => setQtdPecaOS(Number(e.target.value))} required className="w-full p-2.5 border rounded-xl font-bold" />
               </div>
               <button onClick={() => adicionarPecaNaOS(osEditandoPecas.id)} className="w-full bg-turquoise text-navy font-bold py-3 rounded-xl shadow cursor-pointer">
