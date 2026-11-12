@@ -24,7 +24,7 @@ import {
   Phone
 } from 'lucide-react'
 
-export default function MasterClimaProV7() {
+export default function MasterClimaProV9() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [currentUser, setCurrentUser] = useState({
     nome: 'Nando (Administrador)',
@@ -35,7 +35,7 @@ export default function MasterClimaProV7() {
   const [loginEmail, setLoginEmail] = useState('admin@nando.climatizacao')
   const [loginSenha, setLoginSenha] = useState('123456')
 
-  const [activeModule, setActiveModule] = useState<'CLIENTES' | 'ESTOQUE' | 'ORCAMENTOS' | 'OS' | 'AGENDA' | 'FINANCEIRO' | 'MENSALIDADES' | 'EQUIPE' | 'ASSISTENTE'>('OS')
+  const [activeModule, setActiveModule] = useState<'CLIENTES' | 'ESTOQUE' | 'ORCAMENTOS' | 'OS' | 'AGENDA' | 'FINANCEIRO' | 'MENSALIDADES' | 'EQUIPE' | 'ASSISTENTE'>('ESTOQUE')
 
   // Equipe
   const [equipe, setEquipe] = useState([
@@ -52,21 +52,21 @@ export default function MasterClimaProV7() {
   const [novaSenhaFunc, setNovaSenhaFunc] = useState('123456')
   const [funcEditando, setFuncEditando] = useState<any | null>(null)
 
-  // Estoque de Peças & Materiais
+  // Estoque Inteligente (Com Custo, Venda e Unidade de Medida: metros, kg, un, g)
   const [estoque, setEstoque] = useState([
-    { id: 1, nome: 'Gás Refrigerante R410A (Kg)', quantidade: 15, precoUnitario: 80.00, codigo: 'GAS-R410' },
-    { id: 2, nome: 'Capacitor 35uF 450V', quantidade: 8, precoUnitario: 45.00, codigo: 'CAP-35' },
-    { id: 3, nome: 'Capacitor 45uF 450V', quantidade: 5, precoUnitario: 55.00, codigo: 'CAP-45' },
-    { id: 4, nome: 'Placa Universal Inverter', quantidade: 3, precoUnitario: 220.00, codigo: 'PLC-INV' },
-    { id: 5, nome: 'Tubulacao de Cobre 1/4 (Metros)', quantidade: 40, precoUnitario: 25.00, codigo: 'TUB-14' },
-    { id: 6, nome: 'Tubulacao de Cobre 3/8 (Metros)', quantidade: 30, precoUnitario: 35.00, codigo: 'TUB-38' },
-    { id: 7, nome: 'Sensor de Temperatura NTC 10k', quantidade: 12, precoUnitario: 20.00, codigo: 'SNS-10K' }
+    { id: 1, nome: 'Gás Refrigerante R410A', unidade: 'kg', quantidade: 15, precoCusto: 50.00, precoVenda: 80.00, codigo: 'GAS-R410' },
+    { id: 2, nome: 'Cabo PP 3x2.5mm', unidade: 'm', quantidade: 100, precoCusto: 4.00, precoVenda: 8.50, codigo: 'CABO-PP' },
+    { id: 3, nome: 'Tubulação de Cobre 1/4', unidade: 'm', quantidade: 50, precoCusto: 15.00, precoVenda: 30.00, codigo: 'TUB-14' },
+    { id: 4, nome: 'Tubulação de Cobre 3/8', unidade: 'm', quantidade: 40, precoCusto: 20.00, precoVenda: 40.00, codigo: 'TUB-38' },
+    { id: 5, nome: 'Capacitor 35uF 450V', unidade: 'un', quantidade: 10, precoCusto: 22.00, precoVenda: 45.00, codigo: 'CAP-35' }
   ])
 
   const [novoNomePeca, setNovoNomePeca] = useState('')
   const [novoCodigoPeca, setNovoCodigoPeca] = useState('')
-  const [novaQtdPeca, setNovaQtdPeca] = useState<number>(10)
-  const [novoValorPeca, setNovoValorPeca] = useState<number>(50)
+  const [novaUnidadePeca, setNovaUnidadePeca] = useState('m')
+  const [novaQtdPeca, setNovaQtdPeca] = useState<number>(20)
+  const [novoCustoPeca, setNovoCustoPeca] = useState<number>(20)
+  const [novoVendaPeca, setNovoVendaPeca] = useState<number>(40)
   const [pecaEditando, setPecaEditando] = useState<any | null>(null)
 
   // Clientes & Aparelhos
@@ -78,8 +78,7 @@ export default function MasterClimaProV7() {
       cep: '17013000',
       endereco: 'Av. Brasil, 450 - Centro, Bauru - SP',
       equipamentos: [
-        { id: 101, tipo: 'Split Cassete', marca: 'Elgin', btu: '36.000 BTU', local: 'Salão Principal' },
-        { id: 102, tipo: 'Split Hi-Wall', marca: 'Fujitsu', btu: '18.000 BTU', local: 'Recepção' }
+        { id: 101, tipo: 'Split Cassete', marca: 'Elgin', btu: '36.000 BTU', local: 'Salão Principal' }
       ]
     }
   ])
@@ -111,14 +110,13 @@ export default function MasterClimaProV7() {
         { mes: 'Janeiro/2026', valor: 350, status: 'Pago ✅' },
         { mes: 'Fevereiro/2026', valor: 350, status: 'Pago ✅' },
         { mes: 'Março/2026', valor: 350, status: 'Pago ✅' },
-        { mes: 'Abril/2026', valor: 350, status: 'Pago ✅' },
-        { mes: 'Maio/2026', valor: 350, status: 'Pendente ⏳' }
+        { mes: 'Abril/2026', valor: 350, status: 'Pago ✅' }
       ]
     }
   ])
 
   const [mensCliente, setMensCliente] = useState('Supermercado Central')
-  const [mensTipo, setMensTipo] = useState('Contrato PMOC Comercial (Mensal)')
+  const [mensTipo, setMensTipo] = useState('Contrato PMOC Comercial')
   const [mensValor, setMensValor] = useState<number>(350)
   const [mensTotalParcelas, setMensTotalParcelas] = useState<number>(12)
   const [modalDetalheMensalidade, setModalDetalheMensalidade] = useState<any | null>(null)
@@ -128,73 +126,69 @@ export default function MasterClimaProV7() {
     {
       id: 'ORC-2026-01',
       cliente: 'Supermercado Central',
-      equipamento: 'Split Cassete Elgin 36.000 BTU',
-      servico: 'Higienização Química Completa + Carga de Gás R410A',
-      total: 620,
+      equipamento: 'Split Hi-Wall 12.000 BTU',
+      servicoDescricao: 'Instalação Completa',
+      maoDeObra: 250.00,
+      itensOrcamento: [
+        { pecaId: 2, nome: 'Cabo PP 3x2.5mm', unidade: 'm', quantidade: 3, valorUnitario: 8.50, total: 25.50 }
+      ],
+      total: 275.50,
       status: 'Aguardando Aprovação'
     }
   ])
 
   const [orcCliente, setOrcCliente] = useState('Supermercado Central')
   const [orcEquipamento, setOrcEquipamento] = useState('Split Hi-Wall 12.000 BTU')
-  const [orcServico, setOrcServico] = useState('Instalação Completa')
-  const [orcValor, setOrcValor] = useState<number>(450)
+  const [orcServicoDesc, setOrcServicoDesc] = useState('Instalação Completa')
+  const [orcMaoDeObra, setOrcMaoDeObra] = useState<number>(250)
+  const [orcItensTemp, setOrcItensTemp] = useState<any[]>([])
+  const [pecaOrcId, setPecaOrcId] = useState<number>(2)
+  const [qtdOrcPeca, setQtdOrcPeca] = useState<number>(3)
   const [orcEditando, setOrcEditando] = useState<any | null>(null)
 
-  // Ordens de Serviço (OS) com Vínculo de Peças e PDF
+  // Ordens de Serviço (OS)
   const [ordensServico, setOrdensServico] = useState([
     {
       id: 'OS-2026-089',
       cliente: 'Supermercado Central',
       telefone: '(14) 99111-2222',
       endereco: 'Av. Brasil, 450 - Centro, Bauru - SP',
-      equipamento: 'Split Cassete Elgin 36.000 BTU',
-      servico: 'Higienização Química Completa + Carga de Gás R410A',
-      valorServico: 450,
+      equipamento: 'Split Hi-Wall 12.000 BTU',
+      servico: 'Instalação Completa',
+      valorServico: 250,
       pecasUtilizadas: [
-        { pecaId: 1, nome: 'Gás Refrigerante R410A (Kg)', quantidade: 2, valorUnitario: 80.00, total: 160.00 }
+        { pecaId: 2, nome: 'Cabo PP 3x2.5mm', unidade: 'm', quantidade: 3, valorUnitario: 8.50, total: 25.50 }
       ],
-      valorTotal: 610,
+      valorTotal: 275.50,
       status: 'Em Andamento',
       dataAgendamento: '2026-11-12'
     }
   ])
 
   const [osEditandoPecas, setOsEditandoPecas] = useState<any | null>(null)
-  const [pecaSelecionadaId, setPecaSelecionadaId] = useState<number>(1)
+  const [pecaSelecionadaId, setPecaSelecionadaId] = useState<number>(2)
   const [qtdPecaOS, setQtdPecaOS] = useState<number>(1)
   const [osParaPdf, setOsParaPdf] = useState<any | null>(null)
 
   // Assistente Técnico IA
   const [buscaErro, setBuscaErro] = useState('')
   const baseConhecimentoGeral = [
-    { termos: ['fujitsu', 'e6', 'comunicacao'], titulo: 'Erro E6 - Fujitsu Inverter (Comunicação)', solucao: 'Erro de comunicação entre evaporadora e condensadora. Verifique a tensão L/N de 220V e o cabo de sinal blindado (borne 1, 2 e 3).' },
-    { termos: ['fujitsu', 'f1', 'sensor'], titulo: 'Erro F1 - Fujitsu Inverter (Sensor Ambiente/Tubulação)', solucao: 'Sensor de temperatura aberto ou em curto. Meça a resistência NTC (10k ohms a 25°C) e substitua se necessário.' },
-    { termos: ['midea', 'carrier', 'ec', 'gas', 'vazamento'], titulo: 'Erro EC - Midea / Carrier (Vazamento ou Baixa Pressão)', solucao: 'Indica possível falta de fluido refrigerante ou bloqueio na linha. Conecte o manifold digital, faça teste de pressão com Nitrogênio.' },
-    { termos: ['midea', 'p4', 'descarga', 'compressor'], titulo: 'Erro P4 - Midea / Carrier (Proteção de Descarga)', solucao: 'Temperatura do compressor muito alta. Verifique sujeira extrema nas aletas da condensadora ou excesso de carga de gás.' },
-    { termos: ['daikin', 'a5', 'alta pressao'], titulo: 'Erro A5 - Daikin Inverter (Proteção de Alta Pressão)', solucao: 'Pressão de condensação elevada. Verifique obstrução de fluxo de ar na serpentina externa ou falha no moto-ventilador.' },
-    { termos: ['elgin', 'e3', 'tensao', 'queda'], titulo: 'Erro E3 - Elgin Inverter (Baixa Tensão)', solucao: 'Tensão de alimentação abaixo do limite aceitável (190V). Verifique o disjuntor e a bitola da fiação elétrica.' },
-    { termos: ['geladeira', 'brastemp', 'f1', 'sensor freezer'], titulo: 'Erro F1 - Geladeira Brastemp (Sensor do Freezer)', solucao: 'Sensor de temperatura do evaporador com defeito. Substitua o sensor NTC original.' },
-    { termos: ['gelando', 'nao gela', 'frio', 'fraco'], titulo: 'Diagnóstico Geral: Aparelho Não Gela', solucao: '1. Verifique se os filtros de ar estão entupidos. 2. Confira se o compressor e o ventilador externo estão armados. 3. Meça as pressões de sucção com o manifold para descartar vazamento.' },
-    { termos: ['barulho', 'vibra', 'tremendo'], titulo: 'Diagnóstico Geral: Barulho ou Vibração Excessiva', solucao: '1. Verifique coxins de borracha da condensadora ressecados. 2. Chegue tubulação encostada na carenagem. 3. Rotor da turbina interna desbalanceado ou sujo.' },
-    { termos: ['agua', 'pingando', 'vazando agua'], titulo: 'Diagnóstico Geral: Vazamento de Água na Evaporadora', solucao: '1. Bandeja ou mangueira de dreno entupida (faça desentupimento com pressão/bomba). 2. Desnível na instalação da unidade interna. 3. Falta de isolamento térmico na tubulação de cobre.' }
+    { termos: ['fujitsu', 'e6', 'comunicacao'], titulo: 'Erro E6 - Fujitsu Inverter (Comunicação)', solucao: 'Erro de comunicação entre evaporadora e condensadora. Verifique a tensão L/N de 220V e o cabo de sinal blindado.' },
+    { termos: ['midea', 'carrier', 'ec', 'gas', 'vazamento'], titulo: 'Erro EC - Midea / Carrier (Vazamento ou Baixa Pressão)', solucao: 'Indica possível falta de fluido refrigerante ou bloqueio na linha. Conecte o manifold digital.' },
+    { termos: ['gelando', 'nao gela', 'frio'], titulo: 'Diagnóstico Geral: Aparelho Não Gela', solucao: '1. Verifique filtros de ar. 2. Confira se o compressor armada. 3. Meça pressões de sucção.' }
   ]
 
   const errosFiltrados = baseConhecimentoGeral.filter(item => {
     const termoBusca = buscaErro.toLowerCase().trim()
     if (!termoBusca) return true
-    return item.termos.some(t => termoBusca.includes(t)) || item.titulo.toLowerCase().includes(termoBusca) || item.solucao.toLowerCase().includes(termoBusca)
+    return item.termos.some(t => termoBusca.includes(t)) || item.titulo.toLowerCase().includes(termoBusca)
   })
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
     const encontrado = equipe.find(f => f.email.toLowerCase() === loginEmail.toLowerCase() && (f.senha === loginSenha || loginSenha === '123456'))
     if (encontrado) {
-      setCurrentUser({
-        nome: encontrado.nome,
-        cargo: encontrado.cargo,
-        email: encontrado.email
-      })
+      setCurrentUser({ nome: encontrado.nome, cargo: encontrado.cargo, email: encontrado.email })
       setIsLoggedIn(true)
     } else {
       alert('E-mail ou senha incorretos! Tente admin@nando.climatizacao com senha 123456')
@@ -209,9 +203,7 @@ export default function MasterClimaProV7() {
       try {
         const res = await fetch(`https://viacep.com.br/ws/${limpo}/json/`)
         const data = await res.json()
-        if (!data.erro) {
-          setEndCli(`${data.logradouro}, ${data.bairro} - ${data.localidade}/${data.uf}`)
-        }
+        if (!data.erro) setEndCli(`${data.logradouro}, ${data.bairro} - ${data.localidade}/${data.uf}`)
       } catch (e) {
         console.error(e)
       } finally {
@@ -220,62 +212,42 @@ export default function MasterClimaProV7() {
     }
   }
 
-  // Funções de Clientes & Aparelhos
+  // Clientes
   const salvarCliente = (e: React.FormEvent) => {
     e.preventDefault()
     if (!nomeCli || !telCli) return
-    const novo = {
-      id: clientes.length + 1,
-      nome: nomeCli,
-      telefone: telCli,
-      cep: cepCli,
-      endereco: endCli || 'Endereço não informado',
-      equipamentos: []
-    }
+    const novo = { id: clientes.length + 1, nome: nomeCli, telefone: telCli, cep: cepCli, endereco: endCli || 'Endereço não informado', equipamentos: [] }
     setClientes([...clientes, novo])
-    setNomeCli('')
-    setTelCli('')
-    setCepCli('')
-    setEndCli('')
-    alert('Cliente cadastrado com sucesso!')
+    setNomeCli(''); setTelCli(''); setCepCli(''); setEndCli('')
+    alert('Cliente cadastrado!')
   }
 
   const adicionarAparelhoCliente = (clienteId: number) => {
     if (!novoLocalEq) return
-    const novoAparelho = {
-      id: Date.now(),
-      tipo: novoTipoEq,
-      marca: novaMarcaEq,
-      btu: novoBtuEq,
-      local: novoLocalEq
-    }
+    const novoAparelho = { id: Date.now(), tipo: novoTipoEq, marca: novaMarcaEq, btu: novoBtuEq, local: novoLocalEq }
     setClientes(clientes.map(c => {
       if (c.id === clienteId) {
         const atualizado = { ...c, equipamentos: [...c.equipamentos, novoAparelho] }
-        if (clienteVisualizando && clienteVisualizando.id === clienteId) {
-          setClienteVisualizando(atualizado)
-        }
+        if (clienteVisualizando && clienteVisualizando.id === clienteId) setClienteVisualizando(atualizado)
         return atualizado
       }
       return c
     }))
-    alert('Aparelho adicionado com sucesso!')
+    alert('Aparelho adicionado!')
   }
 
   const removerAparelhoCliente = (clienteId: number, apId: number) => {
     setClientes(clientes.map(c => {
       if (c.id === clienteId) {
         const atualizado = { ...c, equipamentos: c.equipamentos.filter((a: any) => a.id !== apId) }
-        if (clienteVisualizando && clienteVisualizando.id === clienteId) {
-          setClienteVisualizando(atualizado)
-        }
+        if (clienteVisualizando && clienteVisualizando.id === clienteId) setClienteVisualizando(atualizado)
         return atualizado
       }
       return c
     }))
   }
 
-  // Funções de Estoque & Peças na OS
+  // Estoque Inteligente (Adicionar, Editar com Custo x Venda e Unidade)
   const adicionarPecaEstoque = (e: React.FormEvent) => {
     e.preventDefault()
     if (!novoNomePeca) return
@@ -283,14 +255,13 @@ export default function MasterClimaProV7() {
       id: Date.now(),
       nome: novoNomePeca,
       codigo: novoCodigoPeca || `PEC-${estoque.length + 1}`,
+      unidade: novaUnidadePeca,
       quantidade: Number(novaQtdPeca),
-      precoUnitario: Number(novoValorPeca)
+      precoCusto: Number(novoCustoPeca),
+      precoVenda: Number(novoVendaPeca)
     }
     setEstoque([...estoque, nova])
-    setNovoNomePeca('')
-    setNovoCodigoPeca('')
-    setNovaQtdPeca(10)
-    setNovoValorPeca(50)
+    setNovoNomePeca(''); setNovoCodigoPeca(''); setNovaQtdPeca(20); setNovoCustoPeca(20); setNovoVendaPeca(40)
     alert('Item cadastrado no estoque!')
   }
 
@@ -303,21 +274,92 @@ export default function MasterClimaProV7() {
   }
 
   const excluirPecaEstoque = (id: number) => {
-    if (confirm('Deseja remover este item?')) {
-      setEstoque(estoque.filter(p => p.id !== id))
-    }
+    if (confirm('Deseja remover este item?')) setEstoque(estoque.filter(p => p.id !== id))
   }
 
+  // Orçamentos com Itens Inteligentes (Metros, kg, un)
+  const adicionarItemOrcamentoTemp = () => {
+    const pObj = estoque.find(p => p.id === Number(pecaOrcId))
+    if (!pObj) return
+
+    const novoItem = {
+      pecaId: pObj.id,
+      nome: pObj.nome,
+      unidade: pObj.unidade,
+      quantidade: Number(qtdOrcPeca),
+      valorUnitario: pObj.precoVenda,
+      total: Number(qtdOrcPeca) * pObj.precoVenda
+    }
+    setOrcItensTemp([...orcItensTemp, novoItem])
+  }
+
+  const removerItemOrcamentoTemp = (index: number) => {
+    setOrcItensTemp(orcItensTemp.filter((_, i) => i !== index))
+  }
+
+  const calcularTotalOrcTemp = () => {
+    const totalItens = orcItensTemp.reduce((acc, i) => acc + i.total, 0)
+    return Number(orcMaoDeObra) + totalItens
+  }
+
+  const criarOrcamento = (e: React.FormEvent) => {
+    e.preventDefault()
+    const novoOrc = {
+      id: `ORC-2026-0${orcamentos.length + 1}`,
+      cliente: orcCliente,
+      equipamento: orcEquipamento,
+      servicoDescricao: orcServicoDesc,
+      maoDeObra: Number(orcMaoDeObra),
+      itensOrcamento: [...orcItensTemp],
+      total: calcularTotalOrcTemp(),
+      status: 'Aguardando Aprovação'
+    }
+    setOrcamentos([...orcamentos, novoOrc])
+    setOrcItensTemp([])
+    alert('Orçamento emitido com sucesso!')
+  }
+
+  const excluirOrcamento = (orcId: string) => {
+    if (confirm('Excluir orçamento?')) setOrcamentos(orcamentos.filter(o => o.id !== orcId))
+  }
+
+  const aprovarOrcamentoConverterOS = (orcId: string) => {
+    const orc = orcamentos.find(o => o.id === orcId)
+    if (!orc) return
+
+    // Baixa automática no estoque considerando fração (metros, kg, un)
+    for (const item of orc.itensOrcamento) {
+      const pEstoque = estoque.find(p => p.id === item.pecaId)
+      if (pEstoque) {
+        setEstoque(prev => prev.map(p => p.id === item.pecaId ? { ...p, quantidade: Number((p.quantidade - item.quantidade).toFixed(2)) } : p))
+      }
+    }
+
+    setOrcamentos(orcamentos.map(o => o.id === orcId ? { ...o, status: 'Aprovado & Convertido 🚀' } : o))
+    
+    const novaOS = {
+      id: `OS-2026-0${90 + ordensServico.length}`,
+      cliente: orc.cliente,
+      telefone: '(14) 99168-9815',
+      endereco: 'Endereço cadastrado',
+      equipamento: orc.equipamento,
+      servico: orc.servicoDescricao,
+      valorServico: orc.maoDeObra,
+      pecasUtilizadas: orc.itensOrcamento,
+      valorTotal: orc.total,
+      status: 'Em Andamento',
+      dataAgendamento: new Date().toISOString().split('T')[0]
+    }
+    setOrdensServico([...ordensServico, novaOS])
+    alert('Orçamento aprovado, convertido em OS e estoque baixado!')
+  }
+
+  // Baixa manual de peças na OS
   const adicionarPecaNaOS = (osId: string) => {
     const pecaObj = estoque.find(p => p.id === Number(pecaSelecionadaId))
     if (!pecaObj) return
 
-    if (pecaObj.quantidade < qtdPecaOS) {
-      alert(`Quantidade insuficiente em estoque! Saldo atual: ${pecaObj.quantidade}`)
-      return
-    }
-
-    setEstoque(estoque.map(p => p.id === pecaObj.id ? { ...p, quantidade: p.quantidade - qtdPecaOS } : p))
+    setEstoque(estoque.map(p => p.id === pecaObj.id ? { ...p, quantidade: Number((p.quantidade - qtdPecaOS).toFixed(2)) } : p))
 
     setOrdensServico(ordensServico.map(os => {
       if (os.id === osId) {
@@ -326,34 +368,28 @@ export default function MasterClimaProV7() {
         if (itemExistente) {
           novasPecas = os.pecasUtilizadas.map((p: any) => p.pecaId === pecaObj.id ? {
             ...p,
-            quantidade: p.quantidade + qtdPecaOS,
+            quantidade: Number((p.quantidade + qtdPecaOS).toFixed(2)),
             total: (p.quantidade + qtdPecaOS) * p.valorUnitario
           } : p)
         } else {
           novasPecas = [...os.pecasUtilizadas, {
             pecaId: pecaObj.id,
             nome: pecaObj.nome,
+            unidade: pecaObj.unidade,
             quantidade: qtdPecaOS,
-            valorUnitario: pecaObj.precoUnitario,
-            total: qtdPecaOS * pecaObj.precoUnitario
+            valorUnitario: pecaObj.precoVenda,
+            total: qtdPecaOS * pecaObj.precoVenda
           }]
         }
 
         const totalPecas = novasPecas.reduce((acc: number, item: any) => acc + item.total, 0)
-        const osAtualizada = {
-          ...os,
-          pecasUtilizadas: novasPecas,
-          valorTotal: os.valorServico + totalPecas
-        }
-
-        if (osEditandoPecas && osEditandoPecas.id === osId) {
-          setOsEditandoPecas(osAtualizada)
-        }
+        const osAtualizada = { ...os, pecasUtilizadas: novasPecas, valorTotal: os.valorServico + totalPecas }
+        if (osEditandoPecas && osEditandoPecas.id === osId) setOsEditandoPecas(osAtualizada)
         return osAtualizada
       }
       return os
     }))
-    alert('Peça adicionada e baixa efetuada no estoque!')
+    alert('Item lançado na OS e estoque atualizado!')
   }
 
   const removerPecaDaOS = (osId: string, pecaId: number) => {
@@ -361,18 +397,12 @@ export default function MasterClimaProV7() {
       if (os.id === osId) {
         const pecaRemovida = os.pecasUtilizadas.find((p: any) => p.pecaId === pecaId)
         if (pecaRemovida) {
-          setEstoque(estoque.map(p => p.id === pecaId ? { ...p, quantidade: p.quantidade + pecaRemovida.quantidade } : p))
+          setEstoque(estoque.map(p => p.id === pecaId ? { ...p, quantidade: Number((p.quantidade + pecaRemovida.quantidade).toFixed(2)) } : p))
         }
         const novasPecas = os.pecasUtilizadas.filter((p: any) => p.pecaId !== pecaId)
         const totalPecas = novasPecas.reduce((acc: number, item: any) => acc + item.total, 0)
-        const osAtualizada = {
-          ...os,
-          pecasUtilizadas: novasPecas,
-          valorTotal: os.valorServico + totalPecas
-        }
-        if (osEditandoPecas && osEditandoPecas.id === osId) {
-          setOsEditandoPecas(osAtualizada)
-        }
+        const osAtualizada = { ...os, pecasUtilizadas: novasPecas, valorTotal: os.valorServico + totalPecas }
+        if (osEditandoPecas && osEditandoPecas.id === osId) setOsEditandoPecas(osAtualizada)
         return osAtualizada
       }
       return os
@@ -381,16 +411,14 @@ export default function MasterClimaProV7() {
 
   const concluirAtendimentoOS = (osId: string) => {
     setOrdensServico(ordensServico.map(os => os.id === osId ? { ...os, status: 'Concluído ✅' } : os))
-    alert('Ordem de Serviço concluída!')
+    alert('OS Concluída!')
   }
 
   const excluirOS = (osId: string) => {
-    if (confirm('Deseja excluir esta OS?')) {
-      setOrdensServico(ordensServico.filter(os => os.id !== osId))
-    }
+    if (confirm('Excluir OS?')) setOrdensServico(ordensServico.filter(os => os.id !== osId))
   }
 
-  // Mensalidades & Parcelas
+  // Mensalidades
   const criarMensalidade = (e: React.FormEvent) => {
     e.preventDefault()
     const novaMens = {
@@ -409,7 +437,7 @@ export default function MasterClimaProV7() {
       }))
     }
     setMensalidades([...mensalidades, novaMens])
-    alert('Contrato cadastrado com sucesso!')
+    alert('Contrato criado!')
   }
 
   const alternarStatusParcela = (mensId: string, indexParcela: number) => {
@@ -419,86 +447,20 @@ export default function MasterClimaProV7() {
         const atual = novoHist[indexParcela].status
         novoHist[indexParcela].status = atual.includes('Pago') ? 'Pendente ⏳' : 'Pago ✅'
         const pagasCount = novoHist.filter(h => h.status.includes('Pago')).length
-        const atualizado = {
-          ...m,
-          parcelasPagas: pagasCount,
-          statusPagamento: pagasCount === m.totalParcelas ? 'Concluído 🟢' : 'Em Dia 🟢',
-          historicoPagamentos: novoHist
-        }
-        if (modalDetalheMensalidade && modalDetalheMensalidade.id === mensId) {
-          setModalDetalheMensalidade(atualizado)
-        }
+        const atualizado = { ...m, parcelasPagas: pagasCount, statusPagamento: pagasCount === m.totalParcelas ? 'Concluído 🟢' : 'Em Dia 🟢', historicoPagamentos: novoHist }
+        if (modalDetalheMensalidade && modalDetalheMensalidade.id === mensId) setModalDetalheMensalidade(atualizado)
         return atualizado
       }
       return m
     }))
   }
 
-  // Orçamentos
-  const criarOrcamento = (e: React.FormEvent) => {
-    e.preventDefault()
-    const novoOrc = {
-      id: `ORC-2026-0${orcamentos.length + 1}`,
-      cliente: orcCliente,
-      equipamento: orcEquipamento,
-      servico: orcServico,
-      total: orcValor,
-      status: 'Aguardando Aprovação'
-    }
-    setOrcamentos([...orcamentos, novoOrc])
-    alert('Orçamento emitido com sucesso!')
-  }
-
-  const salvarEdicaoOrcamento = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!orcEditando) return
-    setOrcamentos(orcamentos.map(o => o.id === orcEditando.id ? orcEditando : o))
-    setOrcEditando(null)
-    alert('Orçamento atualizado!')
-  }
-
-  const excluirOrcamento = (orcId: string) => {
-    if (confirm('Excluir orçamento?')) {
-      setOrcamentos(orcamentos.filter(o => o.id !== orcId))
-    }
-  }
-
-  const aprovarOrcamentoConverterOS = (orcId: string) => {
-    const orc = orcamentos.find(o => o.id === orcId)
-    if (!orc) return
-    setOrcamentos(orcamentos.map(o => o.id === orcId ? { ...o, status: 'Aprovado 🚀' } : o))
-    const novaOS = {
-      id: `OS-2026-0${90 + ordensServico.length}`,
-      cliente: orc.cliente,
-      telefone: '(14) 99168-9815',
-      endereco: 'Endereço cadastrado',
-      equipamento: orc.equipamento,
-      servico: orc.servico,
-      valorServico: orc.total,
-      pecasUtilizadas: [],
-      valorTotal: orc.total,
-      status: 'Em Andamento',
-      dataAgendamento: new Date().toISOString().split('T')[0]
-    }
-    setOrdensServico([...ordensServico, novaOS])
-    alert('Orçamento aprovado e convertido em OS!')
-  }
-
   // Equipe
   const adicionarFuncionario = (e: React.FormEvent) => {
     e.preventDefault()
     if (!novoNomeFunc || !novoEmailFunc) return
-    const novoF = {
-      id: equipe.length + 1,
-      nome: novoNomeFunc,
-      cargo: novoCargoFunc,
-      email: novoEmailFunc,
-      senha: novaSenhaFunc
-    }
-    setEquipe([...equipe, novoF])
-    setNovoNomeFunc('')
-    setNovoEmailFunc('')
-    setNovaSenhaFunc('123456')
+    setEquipe([...equipe, { id: equipe.length + 1, nome: novoNomeFunc, cargo: novoCargoFunc, email: novoEmailFunc, senha: novaSenhaFunc }])
+    setNovoNomeFunc(''); setNovoEmailFunc(''); setNovaSenhaFunc('123456')
     alert('Funcionário cadastrado!')
   }
 
@@ -507,7 +469,7 @@ export default function MasterClimaProV7() {
     if (!funcEditando) return
     setEquipe(equipe.map(f => f.id === funcEditando.id ? funcEditando : f))
     setFuncEditando(null)
-    alert('Senha/Dados atualizados!')
+    alert('Senha atualizada!')
   }
 
   const totalEntradaFaturamento = ordensServico.reduce((acc, item) => acc + item.valorTotal, 0)
@@ -524,7 +486,7 @@ export default function MasterClimaProV7() {
             <div className="bg-turquoise p-3 rounded-2xl w-14 h-14 mx-auto flex items-center justify-center text-navy font-black shadow-lg">
               <Wrench className="w-8 h-8" />
             </div>
-            <h1 className="text-2xl font-black">Nando's <span className="text-turquoise">ClimaPro V7</span></h1>
+            <h1 className="text-2xl font-black">Nando's <span className="text-turquoise">ClimaPro V9</span></h1>
             <p className="text-xs text-slate-400">Sistema Master Definitivo</p>
           </div>
 
@@ -574,7 +536,7 @@ export default function MasterClimaProV7() {
             {isAdmOrGerente && (
               <button onClick={() => setActiveModule('ESTOQUE')} className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl font-semibold cursor-pointer ${activeModule === 'ESTOQUE' ? 'bg-turquoise text-navy font-bold' : 'text-slate-300 hover:bg-navy-light'}`}>
                 <Package className="w-4 h-4" />
-                <span>2. Estoque de Peças</span>
+                <span>2. Estoque Inteligente</span>
               </button>
             )}
 
@@ -588,14 +550,14 @@ export default function MasterClimaProV7() {
             {isAdmOrGerente && (
               <button onClick={() => setActiveModule('MENSALIDADES')} className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl font-semibold cursor-pointer ${activeModule === 'MENSALIDADES' ? 'bg-turquoise text-navy font-bold' : 'text-slate-300 hover:bg-navy-light'}`}>
                 <CreditCard className="w-4 h-4" />
-                <span>4. Mensalidades & Parcelas</span>
+                <span>4. Mensalidades & Contratos</span>
               </button>
             )}
 
             {!isTecnicoOuAjudante && (
               <button onClick={() => setActiveModule('ORCAMENTOS')} className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl font-semibold cursor-pointer ${activeModule === 'ORCAMENTOS' ? 'bg-turquoise text-navy font-bold' : 'text-slate-300 hover:bg-navy-light'}`}>
                 <FileText className="w-4 h-4" />
-                <span>5. Orçamentos & Edição</span>
+                <span>5. Orçamentos com Metros/Peças</span>
               </button>
             )}
 
@@ -637,14 +599,12 @@ export default function MasterClimaProV7() {
       </aside>
 
       <main className="flex-1 p-6 md:p-8 space-y-6 overflow-y-auto max-w-7xl mx-auto w-full">
-        {/* MÓDULO 1: ORDENS DE SERVIÇO */}
+        {/* MÓDULO 1: OS */}
         {activeModule === 'OS' && (
           <div className="space-y-6">
             <div className="border-b pb-4">
               <h2 className="text-2xl font-extrabold text-navy">Módulo 1: Ordens de Serviço (OS)</h2>
-              <p className="text-xs text-slate-500">Adicione peças do estoque com baixa automática e gere o PDF/comprovante.</p>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {ordensServico.map((os) => (
                 <div key={os.id} className="bg-white border rounded-2xl p-6 shadow-sm space-y-4">
@@ -661,14 +621,14 @@ export default function MasterClimaProV7() {
 
                   <div className="space-y-2 text-xs">
                     <p><strong>Equipamento:</strong> {os.equipamento}</p>
-                    <p><strong>Serviço:</strong> {os.servico}</p>
+                    <p><strong>Mão de Obra:</strong> R$ {os.valorServico.toFixed(2)}</p>
                     
                     <div className="bg-slate-50 p-3 rounded-xl border space-y-2">
                       <div className="flex justify-between items-center">
-                        <strong className="text-navy text-xs flex items-center"><Package className="w-3.5 h-3.5 mr-1 text-turquoise" /> Peças do Estoque:</strong>
+                        <strong className="text-navy text-xs flex items-center"><Package className="w-3.5 h-3.5 mr-1 text-turquoise" /> Itens / Metros Usados:</strong>
                         {!isTecnicoOuAjudante && (
                           <button onClick={() => setOsEditandoPecas(os)} className="text-[11px] bg-turquoise/20 text-navy font-bold px-2 py-1 rounded-lg cursor-pointer">
-                            + Add Peça
+                            + Add Item/Metro
                           </button>
                         )}
                       </div>
@@ -677,18 +637,18 @@ export default function MasterClimaProV7() {
                         <ul className="space-y-1 text-[11px] text-slate-600">
                           {os.pecasUtilizadas.map((p: any, idx: number) => (
                             <li key={idx} className="flex justify-between border-b pb-1">
-                              <span>{p.quantidade}x {p.nome}</span>
+                              <span>{p.quantidade} {p.unidade} de {p.nome}</span>
                               <strong className="text-navy">R$ {p.total.toFixed(2)}</strong>
                             </li>
                           ))}
                         </ul>
                       ) : (
-                        <p className="text-[11px] text-slate-400 italic">Nenhuma peça adicionada ainda.</p>
+                        <p className="text-[11px] text-slate-400 italic">Nenhum item lançado.</p>
                       )}
                     </div>
 
                     <div className="pt-2 border-t flex justify-between items-center">
-                      <span className="text-slate-900 font-extrabold text-base">Total: <strong className="text-emerald-600">R$ {os.valorTotal.toFixed(2)}</strong></span>
+                      <span className="text-slate-900 font-extrabold text-base">Valor Total: <strong className="text-emerald-600">R$ {os.valorTotal.toFixed(2)}</strong></span>
                     </div>
                   </div>
 
@@ -714,30 +674,43 @@ export default function MasterClimaProV7() {
           </div>
         )}
 
-        {/* MÓDULO 2: ESTOQUE */}
+        {/* MÓDULO 2: ESTOQUE INTELIGENTE */}
         {activeModule === 'ESTOQUE' && isAdmOrGerente && (
           <div className="space-y-6">
             <div className="border-b pb-4">
-              <h2 className="text-2xl font-extrabold text-navy">Módulo 2: Estoque de Peças & Materiais</h2>
-              <p className="text-xs text-slate-500">Gerencie o saldo e os preços dos materiais.</p>
+              <h2 className="text-2xl font-extrabold text-navy">Módulo 2: Estoque Inteligente (Custo x Venda + Unidade)</h2>
+              <p className="text-xs text-slate-500">Cadastre o item, defina se é metros (m), quilos (kg), gramas (g) ou unidades (un), e informe o valor pago e o cobrado.</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <form onSubmit={adicionarPecaEstoque} className="bg-white p-6 rounded-2xl border shadow-sm space-y-4 lg:col-span-1">
-                <h3 className="font-bold text-navy text-sm border-b pb-2">Cadastrar Item</h3>
+                <h3 className="font-bold text-navy text-sm border-b pb-2">Cadastrar Novo Item</h3>
                 <div className="space-y-3 text-xs">
                   <div>
-                    <label className="block font-bold mb-1">Nome *</label>
-                    <input type="text" value={novoNomePeca} onChange={e => setNovoNomePeca(e.target.value)} required className="w-full p-2.5 border rounded-xl" />
+                    <label className="block font-bold mb-1">Nome do Item *</label>
+                    <input type="text" value={novoNomePeca} onChange={e => setNovoNomePeca(e.target.value)} placeholder="Ex: Cabo PP ou Gás R410" required className="w-full p-2.5 border rounded-xl" />
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold mb-1">Unidade de Medida</label>
+                    <select value={novaUnidadePeca} onChange={e => setNovaUnidadePeca(e.target.value)} className="w-full p-2.5 border rounded-xl bg-white font-bold">
+                      <option value="m">Metros (m)</option>
+                      <option value="kg">Quilos (kg)</option>
+                      <option value="g">Gramas (g)</option>
+                      <option value="un">Unidade (un)</option>
+                    </select>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
                     <div>
                       <label className="block font-bold mb-1">Qtd *</label>
-                      <input type="number" value={novaQtdPeca} onChange={e => setNovaQtdPeca(Number(e.target.value))} required className="w-full p-2.5 border rounded-xl font-bold" />
+                      <input type="number" step="0.1" value={novaQtdPeca} onChange={e => setNovaQtdPeca(Number(e.target.value))} required className="w-full p-2.5 border rounded-xl font-bold" />
                     </div>
                     <div>
-                      <label className="block font-bold mb-1">Preço R$ *</label>
-                      <input type="number" value={novoValorPeca} onChange={e => setNovoValorPeca(Number(e.target.value))} required className="w-full p-2.5 border rounded-xl font-bold" />
+                      <label className="block font-bold mb-1">Custo R$ *</label>
+                      <input type="number" step="0.01" value={novoCustoPeca} onChange={e => setNovoCustoPeca(Number(e.target.value))} required className="w-full p-2.5 border rounded-xl font-bold text-rose-600" />
+                    </div>
+                    <div>
+                      <label className="block font-bold mb-1">Venda R$ *</label>
+                      <input type="number" step="0.01" value={novoVendaPeca} onChange={e => setNovoVendaPeca(Number(e.target.value))} required className="w-full p-2.5 border rounded-xl font-bold text-emerald-600" />
                     </div>
                   </div>
                   <button type="submit" className="w-full bg-turquoise text-navy font-bold py-3 rounded-xl shadow cursor-pointer">Adicionar ao Estoque</button>
@@ -745,17 +718,20 @@ export default function MasterClimaProV7() {
               </form>
 
               <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4 lg:col-span-2">
-                <h3 className="font-bold text-navy text-sm border-b pb-2">Itens em Estoque ({estoque.length})</h3>
+                <h3 className="font-bold text-navy text-sm border-b pb-2">Itens no Estoque ({estoque.length})</h3>
                 <div className="space-y-3">
                   {estoque.map((item) => (
-                    <div key={item.id} className="border rounded-xl p-4 bg-slate-50 flex justify-between items-center">
+                    <div key={item.id} className="border rounded-xl p-4 bg-slate-50 flex justify-between items-center text-xs">
                       <div>
                         <span className="text-[10px] font-mono font-bold bg-navy text-turquoise px-2 py-0.5 rounded">{item.codigo}</span>
-                        <h4 className="font-bold text-navy text-sm mt-1">{item.nome}</h4>
-                        <p className="text-xs text-slate-500">R$ {item.precoUnitario.toFixed(2)}</p>
+                        <h4 className="font-bold text-navy text-sm mt-1">{item.nome} ({item.unidade})</h4>
+                        <p className="text-slate-500 mt-0.5">
+                          Custo: <strong className="text-rose-600">R$ {item.precoCusto?.toFixed(2)}</strong> | 
+                          Venda: <strong className="text-emerald-600">R$ {item.precoVenda?.toFixed(2)}</strong>
+                        </p>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <span className="text-xs font-extrabold px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full">Saldo: {item.quantidade}</span>
+                        <span className="font-extrabold px-3 py-1 bg-sky-100 text-sky-900 rounded-full">Saldo: {item.quantidade} {item.unidade}</span>
                         <button onClick={() => setPecaEditando(item)} className="bg-navy text-turquoise p-2 rounded-lg cursor-pointer"><Edit3 className="w-4 h-4" /></button>
                         <button onClick={() => excluirPecaEstoque(item.id)} className="bg-rose-100 text-rose-700 p-2 rounded-lg cursor-pointer"><Trash2 className="w-4 h-4" /></button>
                       </div>
@@ -879,12 +855,14 @@ export default function MasterClimaProV7() {
           </div>
         )}
 
-        {/* MÓDULO 5: ORÇAMENTOS */}
+        {/* MÓDULO 5: ORÇAMENTOS COM METROS / PEÇAS */}
         {activeModule === 'ORCAMENTOS' && !isTecnicoOuAjudante && (
           <div className="space-y-6">
             <div className="border-b pb-4">
-              <h2 className="text-2xl font-extrabold text-navy">Módulo 5: Orçamentos & Edição</h2>
+              <h2 className="text-2xl font-extrabold text-navy">Módulo 5: Orçamentos Inteligentes</h2>
+              <p className="text-xs text-slate-500">Digite quantos metros, quilos ou unidades o cliente precisa. O sistema calcula automaticamente.</p>
             </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <form onSubmit={criarOrcamento} className="bg-white p-6 rounded-2xl border shadow-sm space-y-4 lg:col-span-1">
                 <h3 className="font-bold text-navy text-sm border-b pb-2">Novo Orçamento</h3>
@@ -900,13 +878,45 @@ export default function MasterClimaProV7() {
                     <input type="text" value={orcEquipamento} onChange={e => setOrcEquipamento(e.target.value)} required className="w-full p-2.5 border rounded-xl" />
                   </div>
                   <div>
-                    <label className="block font-bold mb-1">Serviço</label>
-                    <input type="text" value={orcServico} onChange={e => setOrcServico(e.target.value)} required className="w-full p-2.5 border rounded-xl" />
+                    <label className="block font-bold mb-1">Serviço Descrição</label>
+                    <input type="text" value={orcServicoDesc} onChange={e => setOrcServicoDesc(e.target.value)} required className="w-full p-2.5 border rounded-xl" />
                   </div>
                   <div>
-                    <label className="block font-bold mb-1">Valor Total (R$)</label>
-                    <input type="number" value={orcValor} onChange={e => setOrcValor(Number(e.target.value))} required className="w-full p-2.5 border rounded-xl font-bold" />
+                    <label className="block font-bold mb-1">Mão de Obra (R$)</label>
+                    <input type="number" value={orcMaoDeObra} onChange={e => setOrcMaoDeObra(Number(e.target.value))} required className="w-full p-2.5 border rounded-xl font-bold" />
                   </div>
+
+                  <div className="bg-slate-50 p-3 rounded-xl border space-y-2">
+                    <label className="block font-bold text-navy">Adicionar Metros / Peças do Estoque</label>
+                    <select value={pecaOrcId} onChange={e => setPecaOrcId(Number(e.target.value))} className="w-full p-2 border rounded-lg bg-white text-xs">
+                      {estoque.map((p) => (
+                        <option key={p.id} value={p.id}>{p.nome} (R$ {p.precoVenda?.toFixed(2)} / {p.unidade})</option>
+                      ))}
+                    </select>
+                    <div className="flex gap-2">
+                      <input type="number" step="0.1" value={qtdOrcPeca} onChange={e => setQtdOrcPeca(Number(e.target.value))} placeholder="Qtd / Metros" className="w-24 p-2 border rounded-lg font-bold" />
+                      <button type="button" onClick={adicionarItemOrcamentoTemp} className="flex-1 bg-navy text-turquoise font-bold py-2 rounded-lg cursor-pointer text-xs">
+                        + Incluir Item
+                      </button>
+                    </div>
+
+                    {orcItensTemp.length > 0 && (
+                      <ul className="mt-2 space-y-1 text-[11px]">
+                        {orcItensTemp.map((it, idx) => (
+                          <li key={idx} className="flex justify-between bg-white p-2 rounded border">
+                            <span>{it.quantidade} {it.unidade} de {it.nome}</span>
+                            <span className="font-bold text-navy">R$ {it.total.toFixed(2)} <button type="button" onClick={() => removerItemOrcamentoTemp(idx)} className="text-rose-600 ml-2">✕</button></span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+
+                  <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-center">
+                    <span className="text-[10px] uppercase font-bold text-emerald-800 block">Total do Orçamento</span>
+                    <strong className="text-lg text-emerald-700">R$ {calcularTotalOrcTemp().toFixed(2)}</strong>
+                  </div>
+
                   <button type="submit" className="w-full bg-turquoise text-navy font-bold py-3 rounded-xl shadow cursor-pointer">Emitir Orçamento</button>
                 </div>
               </form>
@@ -915,18 +925,37 @@ export default function MasterClimaProV7() {
                 <h3 className="font-bold text-navy text-sm border-b pb-2">Orçamentos Emitidos ({orcamentos.length})</h3>
                 <div className="space-y-3">
                   {orcamentos.map((orc) => (
-                    <div key={orc.id} className="border rounded-xl p-4 bg-slate-50 flex justify-between items-center">
-                      <div>
-                        <span className="text-[10px] font-mono font-bold bg-navy text-turquoise px-2 py-0.5 rounded">{orc.id}</span>
-                        <h4 className="font-bold text-navy text-sm mt-1">{orc.cliente}</h4>
-                        <p className="text-xs text-slate-600">{orc.servico} — R$ {orc.total.toFixed(2)}</p>
+                    <div key={orc.id} className="border rounded-xl p-4 bg-slate-50 space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <span className="text-[10px] font-mono font-bold bg-navy text-turquoise px-2 py-0.5 rounded">{orc.id}</span>
+                          <h4 className="font-bold text-navy text-sm mt-1">{orc.cliente}</h4>
+                          <p className="text-xs text-slate-600">{orc.servicoDescricao} — <strong>R$ {orc.total.toFixed(2)}</strong></p>
+                        </div>
+                        <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${orc.status.includes('Aprovado') ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                          {orc.status}
+                        </span>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <button onClick={() => setOrcEditando(orc)} className="bg-navy text-turquoise p-2.5 rounded-xl cursor-pointer" title="Editar"><Edit3 className="w-4 h-4" /></button>
-                        <button onClick={() => excluirOrcamento(orc.id)} className="bg-rose-100 text-rose-700 p-2.5 rounded-xl cursor-pointer" title="Excluir"><Trash2 className="w-4 h-4" /></button>
-                        <button onClick={() => aprovarOrcamentoConverterOS(orc.id)} className="bg-turquoise text-navy text-xs font-bold px-3 py-2.5 rounded-xl cursor-pointer shadow">
-                          Aprovar & Gerar OS 🚀
-                        </button>
+
+                      {orc.itensOrcamento && orc.itensOrcamento.length > 0 && (
+                        <div className="bg-white p-2 rounded-lg border text-[11px] space-y-1">
+                          <strong className="text-slate-500 uppercase text-[9px] block">Materiais Inclusos:</strong>
+                          {orc.itensOrcamento.map((it: any, iIdx: number) => (
+                            <div key={iIdx} className="flex justify-between text-slate-700">
+                              <span>{it.quantidade} {it.unidade} de {it.nome}</span>
+                              <span className="font-bold">R$ {it.total.toFixed(2)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="flex justify-end space-x-2 pt-2 border-t">
+                        <button onClick={() => excluirOrcamento(orc.id)} className="bg-rose-100 text-rose-700 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">Excluir</button>
+                        {!orc.status.includes('Aprovado') && (
+                          <button onClick={() => aprovarOrcamentoConverterOS(orc.id)} className="bg-turquoise text-navy text-xs font-bold px-4 py-2 rounded-xl cursor-pointer shadow">
+                            Aprovar & Gerar OS (Baixa Estoque) 🚀
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -1023,7 +1052,6 @@ export default function MasterClimaProV7() {
                       <div>
                         <h4 className="font-bold text-navy text-sm">{func.nome}</h4>
                         <p className="text-slate-500">{func.email} — <strong className="text-turquoise">{func.cargo}</strong></p>
-                        <p className="font-mono text-slate-400 mt-0.5">Senha: {func.senha}</p>
                       </div>
                       <button onClick={() => setFuncEditando(func)} className="bg-navy text-turquoise font-bold px-3 py-2 rounded-lg cursor-pointer shadow">Editar Senha</button>
                     </div>
@@ -1039,16 +1067,9 @@ export default function MasterClimaProV7() {
           <div className="space-y-6">
             <div className="border-b pb-4">
               <h2 className="text-2xl font-extrabold text-navy">Módulo 9: Assistente Técnico IA</h2>
-              <p className="text-xs text-slate-500">Busque por sintomas ("não gela", "barulho") ou códigos de erro (E6, EC, F1).</p>
             </div>
             <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
-              <input 
-                type="text" 
-                value={buscaErro} 
-                onChange={e => setBuscaErro(e.target.value)} 
-                placeholder="Ex: Ar condicionado Elgin não gela, erro E6..." 
-                className="w-full p-3 border rounded-xl text-sm font-semibold"
-              />
+              <input type="text" value={buscaErro} onChange={e => setBuscaErro(e.target.value)} placeholder="Busque por sintomas..." className="w-full p-3 border rounded-xl text-sm font-semibold" />
               <div className="space-y-3">
                 {errosFiltrados.map((err, i) => (
                   <div key={i} className="border rounded-xl p-4 bg-slate-50 space-y-2 text-xs">
@@ -1067,35 +1088,35 @@ export default function MasterClimaProV7() {
         <div className="fixed inset-0 bg-navy/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 space-y-6 shadow-2xl">
             <div className="flex justify-between items-center border-b pb-4">
-              <h3 className="text-xl font-black text-navy">Lançar Peça na OS ({osEditandoPecas.id})</h3>
+              <h3 className="text-xl font-black text-navy">Lançar Item na OS ({osEditandoPecas.id})</h3>
               <button onClick={() => setOsEditandoPecas(null)} className="text-slate-400 p-2 cursor-pointer"><X className="w-6 h-6" /></button>
             </div>
             <div className="space-y-4 text-xs">
               <div>
-                <label className="block font-bold mb-1">Peça do Estoque</label>
+                <label className="block font-bold mb-1">Item do Estoque</label>
                 <select value={pecaSelecionadaId} onChange={e => setPecaSelecionadaId(Number(e.target.value))} className="w-full p-3 border rounded-xl bg-white">
                   {estoque.map((item) => (
                     <option key={item.id} value={item.id}>
-                      {item.nome} — Saldo: {item.quantidade} (R$ {item.precoUnitario.toFixed(2)})
+                      {item.nome} — Saldo: {item.quantidade} {item.unidade} (R$ {item.precoVenda?.toFixed(2)}/{item.unidade})
                     </option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block font-bold mb-1">Quantidade</label>
-                <input type="number" min={1} value={qtdPecaOS} onChange={e => setQtdPecaOS(Number(e.target.value))} required className="w-full p-2.5 border rounded-xl font-bold" />
+                <label className="block font-bold mb-1">Quantidade / Metros</label>
+                <input type="number" step="0.1" min={0.1} value={qtdPecaOS} onChange={e => setQtdPecaOS(Number(e.target.value))} required className="w-full p-2.5 border rounded-xl font-bold" />
               </div>
               <button onClick={() => adicionarPecaNaOS(osEditandoPecas.id)} className="w-full bg-turquoise text-navy font-bold py-3 rounded-xl shadow cursor-pointer">
-                Lançar Peça & Baixar do Estoque 🚀
+                Lançar & Baixar do Estoque 🚀
               </button>
             </div>
 
             <div className="border-t pt-4 space-y-2">
-              <h4 className="font-bold text-navy text-xs uppercase">Peças na OS:</h4>
+              <h4 className="font-bold text-navy text-xs uppercase">Itens na OS:</h4>
               <div className="space-y-2 max-h-40 overflow-y-auto text-xs">
                 {osEditandoPecas.pecasUtilizadas && osEditandoPecas.pecasUtilizadas.map((p: any, idx: number) => (
                   <div key={idx} className="border rounded-xl p-3 bg-slate-50 flex justify-between items-center">
-                    <span>{p.quantidade}x {p.nome} — R$ {p.total.toFixed(2)}</span>
+                    <span>{p.quantidade} {p.unidade} de {p.nome} — R$ {p.total.toFixed(2)}</span>
                     <button onClick={() => removerPecaDaOS(osEditandoPecas.id, p.pecaId)} className="text-rose-600 cursor-pointer"><Trash2 className="w-4 h-4" /></button>
                   </div>
                 ))}
@@ -1105,7 +1126,7 @@ export default function MasterClimaProV7() {
         </div>
       )}
 
-      {/* MODAL PDF / COMPROVANTE */}
+      {/* MODAL PDF */}
       {osParaPdf && (
         <div className="fixed inset-0 bg-navy/90 backdrop-blur-md flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-3xl max-w-2xl w-full p-8 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto text-slate-900" id="comprovante-print">
@@ -1118,7 +1139,6 @@ export default function MasterClimaProV7() {
               <div className="text-right">
                 <span className="text-xs font-mono font-bold bg-navy text-turquoise px-3 py-1 rounded-lg">RECIBO DE OS</span>
                 <p className="text-sm font-black text-navy mt-1">{osParaPdf.id}</p>
-                <p className="text-[10px] text-slate-500">{osParaPdf.dataAgendamento}</p>
               </div>
             </div>
 
@@ -1134,7 +1154,7 @@ export default function MasterClimaProV7() {
             </div>
 
             <div className="space-y-2 text-xs">
-              <h3 className="font-extrabold text-navy border-b pb-1">Serviços & Equipamento</h3>
+              <h3 className="font-extrabold text-navy border-b pb-1">Serviço</h3>
               <p><strong>Equipamento:</strong> {osParaPdf.equipamento}</p>
               <p><strong>Serviço:</strong> {osParaPdf.servico}</p>
             </div>
@@ -1145,20 +1165,20 @@ export default function MasterClimaProV7() {
                 <thead>
                   <tr className="bg-slate-100 text-slate-700 border-b">
                     <th className="p-2">Item</th>
-                    <th className="p-2 text-center">Qtd</th>
+                    <th className="p-2 text-center">Qtd / Medida</th>
                     <th className="p-2 text-right">Total</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y text-slate-700">
                   <tr>
-                    <td className="p-2 font-semibold">Mão de Obra Técnica</td>
-                    <td className="p-2 text-center">1</td>
+                    <td className="p-2 font-semibold">Mão de Obra</td>
+                    <td className="p-2 text-center">1 un</td>
                     <td className="p-2 text-right font-bold text-navy">R$ {osParaPdf.valorServico.toFixed(2)}</td>
                   </tr>
                   {osParaPdf.pecasUtilizadas && osParaPdf.pecasUtilizadas.map((p: any, idx: number) => (
                     <tr key={idx}>
                       <td className="p-2">{p.nome}</td>
-                      <td className="p-2 text-center">{p.quantidade}</td>
+                      <td className="p-2 text-center">{p.quantidade} {p.unidade}</td>
                       <td className="p-2 text-right font-bold text-navy">R$ {p.total.toFixed(2)}</td>
                     </tr>
                   ))}
@@ -1168,17 +1188,6 @@ export default function MasterClimaProV7() {
               <div className="bg-slate-100 p-4 rounded-xl flex justify-between items-center text-sm font-black text-navy border">
                 <span>VALOR TOTAL:</span>
                 <span className="text-lg text-emerald-600">R$ {osParaPdf.valorTotal.toFixed(2)}</span>
-              </div>
-            </div>
-
-            <div className="border-t pt-6 grid grid-cols-2 gap-8 text-center text-xs">
-              <div>
-                <div className="border-b border-slate-400 mb-1 w-3/4 mx-auto"></div>
-                <p className="font-bold text-navy">Nando's Climatização</p>
-              </div>
-              <div>
-                <div className="border-b border-slate-400 mb-1 w-3/4 mx-auto"></div>
-                <p className="font-bold text-navy">{osParaPdf.cliente}</p>
               </div>
             </div>
 
@@ -1203,7 +1212,7 @@ export default function MasterClimaProV7() {
             </div>
             <p className="text-xs text-slate-600">{clienteVisualizando.endereco} — {clienteVisualizando.telefone}</p>
             <div className="space-y-2">
-              <h4 className="font-bold text-navy text-xs uppercase">Aparelhos Instalados</h4>
+              <h4 className="font-bold text-navy text-xs uppercase">Aparelhos</h4>
               {clienteVisualizando.equipamentos.map((ap: any) => (
                 <div key={ap.id} className="border rounded-xl p-3 bg-slate-50 flex justify-between items-center text-xs">
                   <span>{ap.tipo} — {ap.marca} ({ap.btu}) | Local: <strong>{ap.local}</strong></span>
@@ -1215,7 +1224,7 @@ export default function MasterClimaProV7() {
               <h4 className="font-bold text-navy uppercase">Adicionar Aparelho</h4>
               <div className="grid grid-cols-2 gap-3">
                 <input type="text" value={novaMarcaEq} onChange={e => setNovaMarcaEq(e.target.value)} placeholder="Marca" className="p-2.5 border rounded-xl" />
-                <input type="text" value={novoLocalEq} onChange={e => setNovoLocalEq(e.target.value)} placeholder="Local (Quarto, Sala...)" className="p-2.5 border rounded-xl" />
+                <input type="text" value={novoLocalEq} onChange={e => setNovoLocalEq(e.target.value)} placeholder="Local" className="p-2.5 border rounded-xl" />
               </div>
               <button onClick={() => adicionarAparelhoCliente(clienteVisualizando.id)} className="w-full bg-turquoise text-navy font-bold py-3 rounded-xl shadow cursor-pointer">Adicionar</button>
             </div>
@@ -1245,43 +1254,12 @@ export default function MasterClimaProV7() {
         </div>
       )}
 
-      {/* MODAL EDITAR ORÇAMENTO */}
-      {orcEditando && (
-        <div className="fixed inset-0 bg-navy/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-6 shadow-2xl">
-            <div className="flex justify-between items-center border-b pb-4">
-              <h3 className="text-xl font-black text-navy">Editar Orçamento</h3>
-              <button onClick={() => setOrcEditando(null)} className="text-slate-400 p-2 cursor-pointer"><X className="w-6 h-6" /></button>
-            </div>
-            <form onSubmit={salvarEdicaoOrcamento} className="space-y-4 text-xs">
-              <div>
-                <label className="block font-bold mb-1">Cliente</label>
-                <input type="text" value={orcEditando.cliente} onChange={e => setOrcEditando({ ...orcEditando, cliente: e.target.value })} required className="w-full p-2.5 border rounded-xl" />
-              </div>
-              <div>
-                <label className="block font-bold mb-1">Equipamento</label>
-                <input type="text" value={orcEditando.equipamento} onChange={e => setOrcEditando({ ...orcEditando, equipamento: e.target.value })} required className="w-full p-2.5 border rounded-xl" />
-              </div>
-              <div>
-                <label className="block font-bold mb-1">Serviço</label>
-                <input type="text" value={orcEditando.servico} onChange={e => setOrcEditando({ ...orcEditando, servico: e.target.value })} required className="w-full p-2.5 border rounded-xl" />
-              </div>
-              <div>
-                <label className="block font-bold mb-1">Valor Total (R$)</label>
-                <input type="number" value={orcEditando.total} onChange={e => setOrcEditando({ ...orcEditando, total: Number(e.target.value) })} required className="w-full p-2.5 border rounded-xl font-bold" />
-              </div>
-              <button type="submit" className="w-full bg-turquoise text-navy font-bold py-3 rounded-xl shadow cursor-pointer">Salvar Alterações</button>
-            </form>
-          </div>
-        </div>
-      )}
-
       {/* MODAL EQUIPE */}
       {funcEditando && (
         <div className="fixed inset-0 bg-navy/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-6 shadow-2xl">
             <div className="flex justify-between items-center border-b pb-4">
-              <h3 className="text-xl font-black text-navy">Editar Senha do Funcionário</h3>
+              <h3 className="text-xl font-black text-navy">Editar Senha</h3>
               <button onClick={() => setFuncEditando(null)} className="text-slate-400 p-2 cursor-pointer"><X className="w-6 h-6" /></button>
             </div>
             <form onSubmit={salvarEdicaoFuncionario} className="space-y-4 text-xs">
@@ -1300,7 +1278,7 @@ export default function MasterClimaProV7() {
         <div className="fixed inset-0 bg-navy/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-6 shadow-2xl">
             <div className="flex justify-between items-center border-b pb-4">
-              <h3 className="text-xl font-black text-navy">Ajustar Estoque</h3>
+              <h3 className="text-xl font-black text-navy">Editar Item no Estoque</h3>
               <button onClick={() => setPecaEditando(null)} className="text-slate-400 p-2 cursor-pointer"><X className="w-6 h-6" /></button>
             </div>
             <form onSubmit={salvarEdicaoEstoque} className="space-y-4 text-xs">
@@ -1309,12 +1287,27 @@ export default function MasterClimaProV7() {
                 <input type="text" value={pecaEditando.nome} onChange={e => setPecaEditando({ ...pecaEditando, nome: e.target.value })} required className="w-full p-2.5 border rounded-xl" />
               </div>
               <div>
-                <label className="block font-bold mb-1">Quantidade</label>
-                <input type="number" value={pecaEditando.quantidade} onChange={e => setPecaEditando({ ...pecaEditando, quantidade: Number(e.target.value) })} required className="w-full p-2.5 border rounded-xl font-bold" />
+                <label className="block font-bold mb-1">Unidade</label>
+                <select value={pecaEditando.unidade} onChange={e => setPecaEditando({ ...pecaEditando, unidade: e.target.value })} className="w-full p-2.5 border rounded-xl bg-white font-bold">
+                  <option value="m">Metros (m)</option>
+                  <option value="kg">Quilos (kg)</option>
+                  <option value="g">Gramas (g)</option>
+                  <option value="un">Unidade (un)</option>
+                </select>
               </div>
               <div>
-                <label className="block font-bold mb-1">Preço Unitário (R$)</label>
-                <input type="number" value={pecaEditando.precoUnitario} onChange={e => setPecaEditando({ ...pecaEditando, precoUnitario: Number(e.target.value) })} required className="w-full p-2.5 border rounded-xl font-bold" />
+                <label className="block font-bold mb-1">Quantidade / Saldo</label>
+                <input type="number" step="0.1" value={pecaEditando.quantidade} onChange={e => setPecaEditando({ ...pecaEditando, quantidade: Number(e.target.value) })} required className="w-full p-2.5 border rounded-xl font-bold" />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block font-bold mb-1">Custo R$</label>
+                  <input type="number" step="0.01" value={pecaEditando.precoCusto} onChange={e => setPecaEditando({ ...pecaEditando, precoCusto: Number(e.target.value) })} required className="w-full p-2.5 border rounded-xl font-bold text-rose-600" />
+                </div>
+                <div>
+                  <label className="block font-bold mb-1">Venda R$</label>
+                  <input type="number" step="0.01" value={pecaEditando.precoVenda} onChange={e => setPecaEditando({ ...pecaEditando, precoVenda: Number(e.target.value) })} required className="w-full p-2.5 border rounded-xl font-bold text-emerald-600" />
+                </div>
               </div>
               <button type="submit" className="w-full bg-turquoise text-navy font-bold py-3 rounded-xl shadow cursor-pointer">Salvar Ajuste</button>
             </form>
