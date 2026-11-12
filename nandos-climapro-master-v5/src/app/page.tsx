@@ -18,10 +18,13 @@ import {
   Eye,
   X,
   CreditCard,
-  UserCheck
+  UserCheck,
+  Package,
+  Printer,
+  Phone
 } from 'lucide-react'
 
-export default function MasterClimaProV6() {
+export default function MasterClimaProV7() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [currentUser, setCurrentUser] = useState({
     nome: 'Nando (Administrador)',
@@ -32,8 +35,9 @@ export default function MasterClimaProV6() {
   const [loginEmail, setLoginEmail] = useState('admin@nando.climatizacao')
   const [loginSenha, setLoginSenha] = useState('123456')
 
-  const [activeModule, setActiveModule] = useState<'CLIENTES' | 'ORCAMENTOS' | 'OS' | 'AGENDA' | 'FINANCEIRO' | 'MENSALIDADES' | 'EQUIPE' | 'ASSISTENTE'>('CLIENTES')
+  const [activeModule, setActiveModule] = useState<'CLIENTES' | 'ESTOQUE' | 'ORCAMENTOS' | 'OS' | 'AGENDA' | 'FINANCEIRO' | 'MENSALIDADES' | 'EQUIPE' | 'ASSISTENTE'>('OS')
 
+  // 1. Equipe
   const [equipe, setEquipe] = useState([
     { id: 1, nome: 'Nando', cargo: 'ADMIN', email: 'admin@nando.climatizacao', senha: '123' },
     { id: 2, nome: 'Carlos Souza', cargo: 'GERENTE', email: 'gerente@nando.climatizacao', senha: '123' },
@@ -48,6 +52,24 @@ export default function MasterClimaProV6() {
   const [novaSenhaFunc, setNovaSenhaFunc] = useState('123456')
   const [funcEditando, setFuncEditando] = useState<any | null>(null)
 
+  // 2. Estoque de Peças & Materiais
+  const [estoque, setEstoque] = useState([
+    { id: 1, nome: 'Gás Refrigerante R410A (Kg)', quantidade: 15, precoUnitario: 80.00, codigo: 'GAS-R410' },
+    { id: 2, nome: 'Capacitor 35uF 450V', quantidade: 8, precoUnitario: 45.00, codigo: 'CAP-35' },
+    { id: 3, nome: 'Capacitor 45uF 450V', quantidade: 5, precoUnitario: 55.00, codigo: 'CAP-45' },
+    { id: 4, nome: 'Placa Universal Inverter', quantidade: 3, precoUnitario: 220.00, codigo: 'PLC-INV' },
+    { id: 5, nome: 'Tubulacao de Cobre 1/4 (Metros)', quantidade: 40, precoUnitario: 25.00, codigo: 'TUB-14' },
+    { id: 6, nome: 'Tubulacao de Cobre 3/8 (Metros)', quantidade: 30, precoUnitario: 35.00, codigo: 'TUB-38' },
+    { id: 7, nome: 'Sensor de Temperatura NTC 10k', quantidade: 12, precoUnitario: 20.00, codigo: 'SNS-10K' }
+  ])
+
+  const [novoNomePeca, setNovoNomePeca] = useState('')
+  const [novoCodigoPeca, setNovoCodigoPeca] = useState('')
+  const [novaQtdPeca, setNovaQtdPeca] = useState<number>(10)
+  const [novoValorPeca, setNovoValorPeca] = useState<number>(50)
+  const [pecaEditando, setPecaEditando] = useState<any | null>(null)
+
+  // 3. Clientes
   const [clientes, setClientes] = useState([
     {
       id: 1,
@@ -63,17 +85,12 @@ export default function MasterClimaProV6() {
   ])
 
   const [clienteVisualizando, setClienteVisualizando] = useState<any | null>(null)
-  const [novoTipoEq, setNovoTipoEq] = useState('Split Hi-Wall')
-  const [novaMarcaEq, setNovaMarcaEq] = useState('Fujitsu')
-  const [novoBtuEq, setNovoBtuEq] = useState('12.000 BTU')
-  const [novoLocalEq, setNovoLocalEq] = useState('Quarto')
-
   const [nomeCli, setNomeCli] = useState('')
   const [telCli, setTelCli] = useState('')
   const [cepCli, setCepCli] = useState('')
   const [endCli, setEndCli] = useState('')
-  const [loadingCep, setLoadingCep] = useState(false)
 
+  // 4. Mensalidades
   const [mensalidades, setMensalidades] = useState([
     {
       id: 'MENS-01',
@@ -94,26 +111,26 @@ export default function MasterClimaProV6() {
     }
   ])
 
-  const [mensCliente, setMensCliente] = useState('Supermercado Central')
-  const [mensTipo, setMensTipo] = useState('Contrato PMOC Comercial (Mensal)')
-  const [mensValor, setMensValor] = useState<number>(350)
-  const [mensTotalParcelas, setMensTotalParcelas] = useState<number>(12)
   const [modalDetalheMensalidade, setModalDetalheMensalidade] = useState<any | null>(null)
 
+  // 5. Orçamentos
   const [orcamentos, setOrcamentos] = useState([
     {
       id: 'ORC-2026-01',
       cliente: 'Supermercado Central',
       equipamento: 'Split Cassete Elgin 36.000 BTU',
       servico: 'Higienização Química Completa + Carga de Gás R410A',
-      maoObra: 450,
-      materiais: 220,
-      desconto: 50,
       total: 620,
       status: 'Aguardando Aprovação'
     }
   ])
 
+  const [orcCliente, setOrcCliente] = useState('Supermercado Central')
+  const [orcEquipamento, setOrcEquipamento] = useState('Split Hi-Wall 12.000 BTU')
+  const [orcServico, setOrcServico] = useState('Instalação Completa')
+  const [orcValor, setOrcValor] = useState<number>(450)
+
+  // 6. Ordens de Serviço (OS) com Vínculo de Peças do Estoque
   const [ordensServico, setOrdensServico] = useState([
     {
       id: 'OS-2026-089',
@@ -122,31 +139,28 @@ export default function MasterClimaProV6() {
       endereco: 'Av. Brasil, 450 - Centro, Bauru - SP',
       equipamento: 'Split Cassete Elgin 36.000 BTU',
       servico: 'Higienização Química Completa + Carga de Gás R410A',
-      valor: 620,
+      valorServico: 450,
+      pecasUtilizadas: [
+        { pecaId: 1, nome: 'Gás Refrigerante R410A (Kg)', quantidade: 2, valorUnitario: 80.00, total: 160.00 }
+      ],
+      valorTotal: 610,
       status: 'Em Andamento',
       dataAgendamento: '2026-11-12'
     }
   ])
 
+  // Modais de Peças e Impressão de PDF
+  const [osEditandoPecas, setOsEditandoPecas] = useState<any | null>(null)
+  const [pecaSelecionadaId, setPecaSelecionadaId] = useState<number>(1)
+  const [qtdPecaOS, setQtdPecaOS] = useState<number>(1)
+  const [osParaPdf, setOsParaPdf] = useState<any | null>(null)
+
+  // Assistente IA
   const [buscaErro, setBuscaErro] = useState('')
   const baseConhecimentoGeral = [
     { termos: ['fujitsu', 'e6', 'comunicacao'], titulo: 'Erro E6 - Fujitsu Inverter (Comunicação)', solucao: 'Erro de comunicação entre evaporadora e condensadora. Verifique a tensão L/N de 220V e o cabo de sinal blindado (borne 1, 2 e 3).' },
-    { termos: ['fujitsu', 'f1', 'sensor'], titulo: 'Erro F1 - Fujitsu Inverter (Sensor Ambiente/Tubulação)', solucao: 'Sensor de temperatura aberto ou em curto. Meça a resistência NTC (10k ohms a 25°C) e substitua se necessário.' },
-    { termos: ['midea', 'carrier', 'ec', 'gas', 'vazamento'], titulo: 'Erro EC - Midea / Carrier (Vazamento ou Baixa Pressão)', solucao: 'Indica possível falta de fluido refrigerante ou bloqueio na linha. Conecte o manifold digital, faça teste de pressão com Nitrogênio.' },
-    { termos: ['midea', 'p4', 'descarga', 'compressor'], titulo: 'Erro P4 - Midea / Carrier (Proteção de Descarga)', solucao: 'Temperatura do compressor muito alta. Verifique sujeira extrema nas aletas da condensadora ou excesso de carga de gás.' },
-    { termos: ['daikin', 'a5', 'alta pressao'], titulo: 'Erro A5 - Daikin Inverter (Proteção de Alta Pressão)', solucao: 'Pressão de condensação elevada. Verifique obstrução de fluxo de ar na serpentina externa ou falha no moto-ventilador.' },
-    { termos: ['elgin', 'e3', 'tensao', 'queda'], titulo: 'Erro E3 - Elgin Inverter (Baixa Tensão)', solucao: 'Tensão de alimentação abaixo do limite aceitável (190V). Verifique o disjuntor e a bitola da fiação elétrica.' },
-    { termos: ['geladeira', 'brastemp', 'f1', 'sensor freezer'], titulo: 'Erro F1 - Geladeira Brastemp (Sensor do Freezer)', solucao: 'Sensor de temperatura do evaporador com defeito. Substitua o sensor NTC original.' },
-    { termos: ['gelando', 'nao gela', 'frio', 'fraco'], titulo: 'Diagnóstico Geral: Aparelho Não Gela', solucao: '1. Verifique se os filtros de ar estão entupidos. 2. Confira se o compressor e o ventilador externo estão armados. 3. Meça as pressões de sucção com o manifold para descartar vazamento.' },
-    { termos: ['barulho', 'vibra', 'tremendo'], titulo: 'Diagnóstico Geral: Barulho ou Vibração Excessiva', solucao: '1. Verifique coxins de borracha da condensadora ressecados. 2. Chegue tubulação encostada na carenagem. 3. Rotor da turbina interna desbalanceado ou sujo.' },
-    { termos: ['agua', 'pingando', 'vazando agua'], titulo: 'Diagnóstico Geral: Vazamento de Água na Evaporadora', solucao: '1. Bandeja ou mangueira de dreno entupida (faça desentupimento com pressão/bomba). 2. Desnível na instalação da unidade interna. 3. Falta de isolamento térmico na tubulação de cobre.' }
+    { termos: ['midea', 'ec', 'gas', 'vazamento'], titulo: 'Erro EC - Midea / Carrier (Vazamento)', solucao: 'Indica falta de fluido refrigerante. Faça teste de pressão com Nitrogênio.' }
   ]
-
-  const errosFiltrados = baseConhecimentoGeral.filter(item => {
-    const termoBusca = buscaErro.toLowerCase().trim()
-    if (!termoBusca) return true
-    return item.termos.some(t => termoBusca.includes(t)) || item.titulo.toLowerCase().includes(termoBusca) || item.solucao.toLowerCase().includes(termoBusca)
-  })
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
@@ -159,192 +173,109 @@ export default function MasterClimaProV6() {
       })
       setIsLoggedIn(true)
     } else {
-      alert('E-mail ou senha incorretos! Tente admin@nando.climatizacao com senha 123456')
+      alert('E-mail ou senha incorretos!')
     }
   }
 
-  const handleBuscarCep = async (val: string) => {
-    const limpo = val.replace(/\D/g, '')
-    setCepCli(limpo)
-    if (limpo.length === 8) {
-      setLoadingCep(true)
-      try {
-        const res = await fetch(`https://viacep.com.br/ws/${limpo}/json/`)
-        const data = await res.json()
-        if (!data.erro) {
-          setEndCli(`${data.logradouro}, ${data.bairro} - ${data.localidade}/${data.uf}`)
-        }
-      } catch (e) {
-        console.error(e)
-      } finally {
-        setLoadingCep(false)
-      }
-    }
-  }
-
-  const salvarCliente = (e: React.FormEvent) => {
+  // Funções de Estoque
+  const adicionarPecaEstoque = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!nomeCli || !telCli) return
-    const novo = {
-      id: clientes.length + 1,
-      nome: nomeCli,
-      telefone: telCli,
-      cep: cepCli,
-      endereco: endCli || 'Endereço não informado',
-      equipamentos: []
-    }
-    setClientes([...clientes, novo])
-    setNomeCli('')
-    setTelCli('')
-    setCepCli('')
-    setEndCli('')
-    alert('Cliente cadastrado com sucesso!')
-  }
-
-  const adicionarAparelhoCliente = (clienteId: number) => {
-    if (!novoLocalEq) return
-    const novoAparelho = {
+    if (!novoNomePeca) return
+    const nova = {
       id: Date.now(),
-      tipo: novoTipoEq,
-      marca: novaMarcaEq,
-      btu: novoBtuEq,
-      local: novoLocalEq
+      nome: novoNomePeca,
+      codigo: novoCodigoPeca || `PEC-${estoque.length + 1}`,
+      quantidade: Number(novaQtdPeca),
+      precoUnitario: Number(novoValorPeca)
     }
-    setClientes(clientes.map(c => {
-      if (c.id === clienteId) {
-        const atualizado = { ...c, equipamentos: [...c.equipamentos, novoAparelho] }
-        if (clienteVisualizando && clienteVisualizando.id === clienteId) {
-          setClienteVisualizando(atualizado)
+    setEstoque([...estoque, nova])
+    setNovoNomePeca('')
+    setNovoCodigoPeca('')
+    setNovaQtdPeca(10)
+    setNovoValorPeca(50)
+    alert('Item cadastrado no estoque!')
+  }
+
+  // Baixa Automática no Estoque ao Add Peça na OS
+  const adicionarPecaNaOS = (osId: string) => {
+    const pecaObj = estoque.find(p => p.id === Number(pecaSelecionadaId))
+    if (!pecaObj) return
+
+    if (pecaObj.quantidade < qtdPecaOS) {
+      alert(`Quantidade insuficiente em estoque! Saldo atual: ${pecaObj.quantidade}`)
+      return
+    }
+
+    // 1. Baixa no Estoque
+    setEstoque(estoque.map(p => p.id === pecaObj.id ? { ...p, quantidade: p.quantidade - qtdPecaOS } : p))
+
+    // 2. Vincular na OS
+    setOrdensServico(ordensServico.map(os => {
+      if (os.id === osId) {
+        const itemExistente = os.pecasUtilizadas.find((p: any) => p.pecaId === pecaObj.id)
+        let novasPecas = []
+        if (itemExistente) {
+          novasPecas = os.pecasUtilizadas.map((p: any) => p.pecaId === pecaObj.id ? {
+            ...p,
+            quantidade: p.quantidade + qtdPecaOS,
+            total: (p.quantidade + qtdPecaOS) * p.valorUnitario
+          } : p)
+        } else {
+          novasPecas = [...os.pecasUtilizadas, {
+            pecaId: pecaObj.id,
+            nome: pecaObj.nome,
+            quantidade: qtdPecaOS,
+            valorUnitario: pecaObj.precoUnitario,
+            total: qtdPecaOS * pecaObj.precoUnitario
+          }]
         }
-        return atualizado
+
+        const totalPecas = novasPecas.reduce((acc: number, item: any) => acc + item.total, 0)
+        const osAtualizada = {
+          ...os,
+          pecasUtilizadas: novasPecas,
+          valorTotal: os.valorServico + totalPecas
+        }
+
+        if (osEditandoPecas && osEditandoPecas.id === osId) {
+          setOsEditandoPecas(osAtualizada)
+        }
+
+        return osAtualizada
       }
-      return c
+      return os
     }))
-    alert('Aparelho adicionado ao cliente com sucesso!')
+
+    alert(`Adicionado ${qtdPecaOS}x ${pecaObj.nome} na OS! Baixa de estoque efetuada.`)
   }
 
-  const removerAparelhoCliente = (clienteId: number, apId: number) => {
-    setClientes(clientes.map(c => {
-      if (c.id === clienteId) {
-        const atualizado = { ...c, equipamentos: c.equipamentos.filter((a: any) => a.id !== apId) }
-        if (clienteVisualizando && clienteVisualizando.id === clienteId) {
-          setClienteVisualizando(atualizado)
+  const removerPecaDaOS = (osId: string, pecaId: number) => {
+    setOrdensServico(ordensServico.map(os => {
+      if (os.id === osId) {
+        const pecaRemovida = os.pecasUtilizadas.find((p: any) => p.pecaId === pecaId)
+        if (pecaRemovida) {
+          setEstoque(estoque.map(p => p.id === pecaId ? { ...p, quantidade: p.quantidade + pecaRemovida.quantidade } : p))
         }
-        return atualizado
+
+        const novasPecas = os.pecasUtilizadas.filter((p: any) => p.pecaId !== pecaId)
+        const totalPecas = novasPecas.reduce((acc: number, item: any) => acc + item.total, 0)
+        const osAtualizada = {
+          ...os,
+          pecasUtilizadas: novasPecas,
+          valorTotal: os.valorServico + totalPecas
+        }
+
+        if (osEditandoPecas && osEditandoPecas.id === osId) {
+          setOsEditandoPecas(osAtualizada)
+        }
+
+        return osAtualizada
       }
-      return c
-    }))
-  }
-
-  const adicionarFuncionario = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!novoNomeFunc || !novoEmailFunc) return
-    const novoF = {
-      id: equipe.length + 1,
-      nome: novoNomeFunc,
-      cargo: novoCargoFunc,
-      email: novoEmailFunc,
-      senha: novaSenhaFunc
-    }
-    setEquipe([...equipe, novoF])
-    setNovoNomeFunc('')
-    setNovoEmailFunc('')
-    setNovaSenhaFunc('123456')
-    alert('Funcionário cadastrado com sucesso!')
-  }
-
-  const salvarEdicaoFuncionario = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!funcEditando) return
-    setEquipe(equipe.map(f => f.id === funcEditando.id ? funcEditando : f))
-    setFuncEditando(null)
-    alert('Dados e senha do funcionário atualizados com sucesso!')
-  }
-
-  const excluirFuncionario = (id: number) => {
-    if (confirm('Deseja realmente remover este funcionário?')) {
-      setEquipe(equipe.filter(f => f.id !== id))
-    }
-  }
-
-  const concluirAtendimentoOS = (osId: string) => {
-    setOrdensServico(ordensServico.map(os => os.id === osId ? { ...os, status: 'Concluído ✅' } : os))
-    alert('Ordem de Serviço concluída com sucesso!')
-  }
-
-  const excluirOS = (osId: string) => {
-    if (confirm('Deseja excluir esta Ordem de Serviço?')) {
-      setOrdensServico(ordensServico.filter(os => os.id !== osId))
-    }
-  }
-
-  const criarMensalidade = (e: React.FormEvent) => {
-    e.preventDefault()
-    const novaMens = {
-      id: `MENS-0${mensalidades.length + 1}`,
-      cliente: mensCliente,
-      tipoContrato: mensTipo,
-      valorMensal: mensValor,
-      vencimento: 'Dia 10 de cada mês',
-      statusPagamento: 'Ativo 🟢',
-      totalParcelas: mensTotalParcelas,
-      parcelasPagas: 0,
-      historicoPagamentos: Array.from({ length: mensTotalParcelas }, (_, i) => ({
-        mes: `Mês ${i + 1}/2026`,
-        valor: mensValor,
-        status: 'Pendente ⏳'
-      }))
-    }
-    setMensalidades([...mensalidades, novaMens])
-    alert('Contrato de mensalidade cadastrado com sucesso!')
-  }
-
-  const alternarStatusParcela = (mensId: string, indexParcela: number) => {
-    setMensalidades(mensalidades.map(m => {
-      if (m.id === mensId) {
-        const novoHist = [...m.historicoPagamentos]
-        const atual = novoHist[indexParcela].status
-        novoHist[indexParcela].status = atual.includes('Pago') ? 'Pendente ⏳' : 'Pago ✅'
-        const pagasCount = novoHist.filter(h => h.status.includes('Pago')).length
-        const atualizado = {
-          ...m,
-          parcelasPagas: pagasCount,
-          statusPagamento: pagasCount === m.totalParcelas ? 'Concluído 🟢' : 'Em Dia 🟢',
-          historicoPagamentos: novoHist
-        }
-        if (modalDetalheMensalidade && modalDetalheMensalidade.id === mensId) {
-          setModalDetalheMensalidade(atualizado)
-        }
-        return atualizado
-      }
-      return m
+      return os
     }))
   }
 
-  const aprovarOrcamentoConverterOS = (orcId: string) => {
-    const orc = orcamentos.find(o => o.id === orcId)
-    if (!orc) return
-    setOrcamentos(orcamentos.map(o => o.id === orcId ? { ...o, status: 'Aprovado 🚀' } : o))
-    const novaOS = {
-      id: `OS-2026-0${90 + ordensServico.length}`,
-      cliente: orc.cliente,
-      telefone: '(14) 99168-9815',
-      endereco: 'Endereço cadastrado',
-      equipamento: orc.equipamento,
-      servico: orc.servico,
-      valor: orc.total,
-      status: 'Em Andamento',
-      dataAgendamento: new Date().toISOString().split('T')[0]
-    }
-    setOrdensServico([...ordensServico, novaOS])
-    alert('Orçamento aprovado e convertido em OS & Agenda com sucesso!')
-  }
-
-  const totalEntradaFaturamento = ordensServico.reduce((acc, item) => acc + item.valor, 0)
-  const totalMensalidadesRecebidas = mensalidades.reduce((acc, item) => {
-    const pagas = item.historicoPagamentos ? item.historicoPagamentos.filter((h: any) => h.status.includes('Pago')).length : 0
-    return acc + (pagas > 0 ? item.valorMensal : 0)
-  }, 0)
+  const totalEntradaFaturamento = ordensServico.reduce((acc, item) => acc + item.valorTotal, 0)
 
   if (!isLoggedIn) {
     return (
@@ -354,38 +285,20 @@ export default function MasterClimaProV6() {
             <div className="bg-turquoise p-3 rounded-2xl w-14 h-14 mx-auto flex items-center justify-center text-navy font-black shadow-lg">
               <Wrench className="w-8 h-8" />
             </div>
-            <h1 className="text-2xl font-black">Nando's <span className="text-turquoise">ClimaPro V6</span></h1>
-            <p className="text-xs text-slate-400">Sistema Master Definitivo</p>
+            <h1 className="text-2xl font-black">Nando's <span className="text-turquoise">ClimaPro V7</span></h1>
+            <p className="text-xs text-slate-400">Sistema Empresarial com Estoque & PDF</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4 text-sm">
             <div>
-              <label className="block text-xs font-bold text-slate-300 mb-1">E-mail de Acesso</label>
-              <input 
-                type="email" 
-                value={loginEmail} 
-                onChange={e => setLoginEmail(e.target.value)} 
-                required 
-                className="w-full p-3 bg-navy border border-navy-light rounded-xl text-white focus:ring-2 focus:ring-turquoise" 
-              />
-              <span className="text-[10px] text-slate-400 mt-1 block">Padrão ADM: admin@nando.climatizacao</span>
+              <label className="block text-xs font-bold text-slate-300 mb-1">E-mail</label>
+              <input type="email" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} required className="w-full p-3 bg-navy border rounded-xl text-white" />
             </div>
-
             <div>
               <label className="block text-xs font-bold text-slate-300 mb-1">Senha</label>
-              <input 
-                type="password" 
-                value={loginSenha} 
-                onChange={e => setLoginSenha(e.target.value)} 
-                required 
-                className="w-full p-3 bg-navy border border-navy-light rounded-xl text-white focus:ring-2 focus:ring-turquoise" 
-              />
-              <span className="text-[10px] text-slate-400 mt-1 block">Padrão: 123456</span>
+              <input type="password" value={loginSenha} onChange={e => setLoginSenha(e.target.value)} required className="w-full p-3 bg-navy border rounded-xl text-white" />
             </div>
-
-            <button type="submit" className="w-full bg-turquoise hover:bg-turquoise-hover text-navy font-bold py-3.5 rounded-xl cursor-pointer transition-all shadow-lg">
-              Entrar no Sistema
-            </button>
+            <button type="submit" className="w-full bg-turquoise text-navy font-bold py-3.5 rounded-xl">Entrar</button>
           </form>
         </div>
       </div>
@@ -393,7 +306,6 @@ export default function MasterClimaProV6() {
   }
 
   const isAdmOrGerente = currentUser.cargo === 'ADMIN' || currentUser.cargo === 'GERENTE'
-  const isTecnicoOuAjudante = currentUser.cargo === 'TECNICO' || currentUser.cargo === 'AJUDANTE'
 
   return (
     <div className="min-h-screen bg-surface flex flex-col md:flex-row text-slate-900 font-sans">
@@ -405,254 +317,43 @@ export default function MasterClimaProV6() {
             </div>
             <div>
               <h1 className="font-extrabold text-base tracking-tight">Nando's <span className="text-turquoise">ClimaPro</span></h1>
-              <p className="text-[10px] text-slate-400">Logado: <strong className="text-turquoise">{currentUser.nome}</strong> ({currentUser.cargo})</p>
+              <p className="text-[10px] text-slate-400">Logado: <strong className="text-turquoise">{currentUser.nome}</strong></p>
             </div>
           </div>
 
           <nav className="space-y-1.5 text-xs">
-            {!isTecnicoOuAjudante && (
-              <button onClick={() => setActiveModule('CLIENTES')} className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl font-semibold cursor-pointer transition-all ${activeModule === 'CLIENTES' ? 'bg-turquoise text-navy font-bold' : 'text-slate-300 hover:bg-navy-light'}`}>
-                <Users className="w-4 h-4" />
-                <span>1. Clientes & Aparelhos</span>
-              </button>
-            )}
-
-            {isAdmOrGerente && (
-              <button onClick={() => setActiveModule('MENSALIDADES')} className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl font-semibold cursor-pointer transition-all ${activeModule === 'MENSALIDADES' ? 'bg-turquoise text-navy font-bold' : 'text-slate-300 hover:bg-navy-light'}`}>
-                <CreditCard className="w-4 h-4" />
-                <span>2. Mensalidades & Parcelas</span>
-              </button>
-            )}
-
-            {!isTecnicoOuAjudante && (
-              <button onClick={() => setActiveModule('ORCAMENTOS')} className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl font-semibold cursor-pointer transition-all ${activeModule === 'ORCAMENTOS' ? 'bg-turquoise text-navy font-bold' : 'text-slate-300 hover:bg-navy-light'}`}>
-                <FileText className="w-4 h-4" />
-                <span>3. Orçamentos & Aprovação</span>
-              </button>
-            )}
-
-            <button onClick={() => setActiveModule('OS')} className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl font-semibold cursor-pointer transition-all ${activeModule === 'OS' ? 'bg-turquoise text-navy font-bold' : 'text-slate-300 hover:bg-navy-light'}`}>
+            <button onClick={() => setActiveModule('OS')} className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl font-semibold cursor-pointer ${activeModule === 'OS' ? 'bg-turquoise text-navy font-bold' : 'text-slate-300'}`}>
               <Wrench className="w-4 h-4" />
-              <span>4. Ordens de Serviço (OS)</span>
-            </button>
-
-            <button onClick={() => setActiveModule('AGENDA')} className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl font-semibold cursor-pointer transition-all ${activeModule === 'AGENDA' ? 'bg-turquoise text-navy font-bold' : 'text-slate-300 hover:bg-navy-light'}`}>
-              <Calendar className="w-4 h-4" />
-              <span>5. Agenda Automática</span>
+              <span>1. Ordens de Serviço (OS)</span>
             </button>
 
             {isAdmOrGerente && (
-              <button onClick={() => setActiveModule('FINANCEIRO')} className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl font-semibold cursor-pointer transition-all ${activeModule === 'FINANCEIRO' ? 'bg-turquoise text-navy font-bold' : 'text-slate-300 hover:bg-navy-light'}`}>
-                <DollarSign className="w-4 h-4" />
-                <span>6. Caixa & Lucro Real</span>
+              <button onClick={() => setActiveModule('ESTOQUE')} className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl font-semibold cursor-pointer ${activeModule === 'ESTOQUE' ? 'bg-turquoise text-navy font-bold' : 'text-slate-300'}`}>
+                <Package className="w-4 h-4" />
+                <span>2. Estoque de Peças</span>
               </button>
             )}
 
-            {currentUser.cargo === 'ADMIN' && (
-              <button onClick={() => setActiveModule('EQUIPE')} className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl font-semibold cursor-pointer transition-all ${activeModule === 'EQUIPE' ? 'bg-turquoise text-navy font-bold' : 'text-slate-300 hover:bg-navy-light'}`}>
-                <UserCheck className="w-4 h-4" />
-                <span>7. Gestão de Equipe & Senhas</span>
-              </button>
-            )}
-
-            <button onClick={() => setActiveModule('ASSISTENTE')} className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl font-semibold cursor-pointer transition-all ${activeModule === 'ASSISTENTE' ? 'bg-turquoise text-navy font-bold' : 'text-slate-300 hover:bg-navy-light'}`}>
-              <HelpCircle className="w-4 h-4" />
-              <span>8. Assistente Técnico IA</span>
+            <button onClick={() => setActiveModule('CLIENTES')} className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl font-semibold cursor-pointer ${activeModule === 'CLIENTES' ? 'bg-turquoise text-navy font-bold' : 'text-slate-300'}`}>
+              <Users className="w-4 h-4" />
+              <span>3. Clientes & Aparelhos</span>
             </button>
           </nav>
         </div>
 
-        <div className="pt-4 border-t border-navy-light text-xs space-y-2">
-          <div className="flex justify-between items-center text-slate-300">
-            <span>{currentUser.nome}</span>
-            <button onClick={() => setIsLoggedIn(false)} className="text-rose-400 hover:text-rose-300 font-bold flex items-center space-x-1 cursor-pointer">
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Sair</span>
-            </button>
-          </div>
+        <div className="pt-4 border-t border-navy-light text-xs">
+          <button onClick={() => setIsLoggedIn(false)} className="text-rose-400 font-bold flex items-center space-x-1">
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Sair</span>
+          </button>
         </div>
       </aside>
 
       <main className="flex-1 p-6 md:p-8 space-y-6 overflow-y-auto max-w-7xl mx-auto w-full">
-        {isTecnicoOuAjudante && (
-          <div className="bg-amber-50 border border-amber-200 text-amber-900 p-4 rounded-xl text-sm flex items-center space-x-3 shadow-sm">
-            <ShieldCheck className="w-6 h-6 text-amber-600 shrink-0" />
-            <div>
-              <strong className="font-bold">Modo Campo ({currentUser.cargo}):</strong> Visualização operacional de ordens de serviço, endereços e rotas.
-            </div>
-          </div>
-        )}
-
-        {activeModule === 'CLIENTES' && !isTecnicoOuAjudante && (
-          <div className="space-y-6">
-            <div className="border-b pb-4">
-              <h2 className="text-2xl font-extrabold text-navy">Módulo 1: Gestão de Clientes & Aparelhos</h2>
-              <p className="text-xs text-slate-500">Cadastre clientes, clique para ver o perfil completo e gerenciar aparelhos por cômodo (quarto, sala, etc).</p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <form onSubmit={salvarCliente} className="bg-white p-6 rounded-2xl border shadow-sm space-y-4 lg:col-span-1">
-                <h3 className="font-bold text-navy text-sm border-b pb-2 flex items-center space-x-2">
-                  <Plus className="w-4 h-4 text-turquoise" />
-                  <span>Novo Cliente</span>
-                </h3>
-                <div className="space-y-3 text-xs">
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Nome / Empresa *</label>
-                    <input type="text" value={nomeCli} onChange={e => setNomeCli(e.target.value)} placeholder="Ex: Maria Silva" required className="w-full p-2.5 border rounded-xl" />
-                  </div>
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Telefone / WhatsApp *</label>
-                    <input type="text" value={telCli} onChange={e => setTelCli(e.target.value)} placeholder="(14) 99168-9815" required className="w-full p-2.5 border rounded-xl" />
-                  </div>
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">CEP (Busca ViaCEP)</label>
-                    <input type="text" maxLength={8} value={cepCli} onChange={e => handleBuscarCep(e.target.value)} placeholder="17013000" className="w-full p-2.5 border rounded-xl font-mono" />
-                    {loadingCep && <span className="text-turquoise mt-1 block">Buscando endereço...</span>}
-                  </div>
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Endereço Completo</label>
-                    <input type="text" value={endCli} onChange={e => setEndCli(e.target.value)} placeholder="Rua preenchida automaticamente" className="w-full p-2.5 border rounded-xl bg-slate-50" />
-                  </div>
-                  <button type="submit" className="w-full bg-turquoise hover:bg-turquoise-hover text-navy font-bold py-3 rounded-xl cursor-pointer shadow-md mt-2">
-                    Salvar Cliente
-                  </button>
-                </div>
-              </form>
-
-              <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4 lg:col-span-2">
-                <h3 className="font-bold text-navy text-sm border-b pb-2">Clientes Cadastrados ({clientes.length}) — Clique em "Ver Perfil & Aparelhos"</h3>
-                <div className="space-y-3">
-                  {clientes.map((c) => (
-                    <div key={c.id} className="border rounded-xl p-4 bg-slate-50 flex justify-between items-center">
-                      <div>
-                        <h4 className="font-bold text-navy text-base">{c.nome}</h4>
-                        <p className="text-xs text-slate-500 flex items-center mt-0.5"><MapPin className="w-3.5 h-3.5 mr-1 text-slate-400" />{c.endereco}</p>
-                        <p className="text-xs text-slate-500 mt-0.5">{c.telefone}</p>
-                        <span className="inline-block mt-2 bg-turquoise/20 text-navy text-[11px] font-bold px-2.5 py-0.5 rounded-full">
-                          {c.equipamentos.length} Aparelho(s) Cadastrado(s)
-                        </span>
-                      </div>
-                      <button onClick={() => setClienteVisualizando(c)} className="bg-navy hover:bg-navy-dark text-turquoise font-bold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 cursor-pointer shadow">
-                        <Eye className="w-4 h-4" />
-                        <span>Ver Perfil & Aparelhos</span>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeModule === 'MENSALIDADES' && isAdmOrGerente && (
-          <div className="space-y-6">
-            <div className="border-b pb-4">
-              <h2 className="text-2xl font-extrabold text-navy">Módulo 2: Mensalidades & Controle de Parcelas</h2>
-              <p className="text-xs text-slate-500">Acompanhe quais parcelas o cliente já pagou e registre novos contratos PMOC.</p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <form onSubmit={criarMensalidade} className="bg-white p-6 rounded-2xl border shadow-sm space-y-4 lg:col-span-1">
-                <h3 className="font-bold text-navy text-sm border-b pb-2">Novo Contrato Mensal</h3>
-                <div className="space-y-3 text-xs">
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Cliente</label>
-                    <select value={mensCliente} onChange={e => setMensCliente(e.target.value)} className="w-full p-2.5 border rounded-xl bg-white font-semibold">
-                      {clientes.map((c, i) => <option key={i} value={c.nome}>{c.nome}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Tipo de Contrato</label>
-                    <input type="text" value={mensTipo} onChange={e => setMensTipo(e.target.value)} required className="w-full p-2.5 border rounded-xl" />
-                  </div>
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Valor da Mensalidade (R$)</label>
-                    <input type="number" value={mensValor} onChange={e => setMensValor(Number(e.target.value))} required className="w-full p-2.5 border rounded-xl font-bold text-navy" />
-                  </div>
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Total de Meses / Parcelas</label>
-                    <input type="number" value={mensTotalParcelas} onChange={e => setMensTotalParcelas(Number(e.target.value))} required className="w-full p-2.5 border rounded-xl font-bold text-navy" />
-                  </div>
-                  <button type="submit" className="w-full bg-turquoise hover:bg-turquoise-hover text-navy font-bold py-3 rounded-xl cursor-pointer shadow-md">
-                    Criar Contrato
-                  </button>
-                </div>
-              </form>
-
-              <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4 lg:col-span-2">
-                <div className="flex justify-between items-center border-b pb-2">
-                  <h3 className="font-bold text-navy text-sm">Contratos & Histórico de Pagamentos ({mensalidades.length})</h3>
-                  <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">Total Recebido/Mês: R$ {totalMensalidadesRecebidas.toFixed(2)}</span>
-                </div>
-                <div className="space-y-3">
-                  {mensalidades.map((m) => {
-                    const pagas = m.historicoPagamentos ? m.historicoPagamentos.filter((h: any) => h.status.includes('Pago')).length : 0
-                    return (
-                      <div key={m.id} className="border rounded-xl p-4 bg-slate-50 flex justify-between items-center">
-                        <div>
-                          <span className="text-[10px] font-mono font-bold bg-navy text-turquoise px-2 py-0.5 rounded">{m.id}</span>
-                          <h4 className="font-bold text-navy text-sm mt-1">{m.cliente}</h4>
-                          <p className="text-xs text-slate-600">{m.tipoContrato}</p>
-                          <p className="text-xs font-bold text-emerald-700 mt-1">Parcelas Pagas: {pagas} de {m.totalParcelas}</p>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <div className="text-right">
-                            <p className="text-base font-black text-navy">R$ {m.valorMensal.toFixed(2)}</p>
-                            <span className="text-xs font-bold text-emerald-700">{m.statusPagamento}</span>
-                          </div>
-                          <button onClick={() => setModalDetalheMensalidade(m)} className="bg-navy text-turquoise text-xs font-bold px-3 py-2 rounded-xl cursor-pointer shadow">
-                            Ver Parcelas 📋
-                          </button>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeModule === 'ORCAMENTOS' && !isTecnicoOuAjudante && (
-          <div className="space-y-6">
-            <div className="border-b pb-4">
-              <h2 className="text-2xl font-extrabold text-navy">Módulo 3: Orçamentos Inteligentes</h2>
-              <p className="text-xs text-slate-500">Aprove orçamentos para converter em Ordem de Serviço.</p>
-            </div>
-
-            <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
-              <h3 className="font-bold text-navy text-sm border-b pb-2">Orçamentos Emitidos</h3>
-              <div className="space-y-3">
-                {orcamentos.map((orc) => (
-                  <div key={orc.id} className="border rounded-xl p-4 bg-slate-50 flex justify-between items-center">
-                    <div>
-                      <span className="text-[10px] font-mono font-bold bg-navy text-turquoise px-2 py-0.5 rounded">{orc.id}</span>
-                      <h4 className="font-bold text-navy text-sm mt-1">{orc.cliente}</h4>
-                      <p className="text-xs text-slate-600">{orc.servico}</p>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <span className="font-bold text-navy">R$ {orc.total.toFixed(2)}</span>
-                      {!orc.status.includes('Aprovado') ? (
-                        <button onClick={() => aprovarOrcamentoConverterOS(orc.id)} className="bg-navy text-turquoise text-xs font-bold px-3 py-1.5 rounded-lg cursor-pointer">
-                          Aprovar & Gerar OS 🚀
-                        </button>
-                      ) : (
-                        <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">Aprovado</span>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
         {activeModule === 'OS' && (
           <div className="space-y-6">
             <div className="border-b pb-4">
-              <h2 className="text-2xl font-extrabold text-navy">Módulo 4: Ordens de Serviço (OS Dupla Segura)</h2>
-              <p className="text-xs text-slate-500">Conclua atendimentos em campo ou exclua registros.</p>
+              <h2 className="text-2xl font-extrabold text-navy">Ordens de Serviço (OS)</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -662,47 +363,45 @@ export default function MasterClimaProV6() {
                     <div>
                       <span className="text-[10px] font-mono font-bold text-turquoise bg-navy px-2 py-0.5 rounded">{os.id}</span>
                       <h3 className="font-bold text-navy text-base mt-1">{os.cliente}</h3>
-                      <p className="text-xs text-slate-500 flex items-center mt-1"><MapPin className="w-3.5 h-3.5 mr-1 text-slate-400" />{os.endereco}</p>
+                      <p className="text-xs text-slate-500"><MapPin className="w-3.5 h-3.5 inline mr-1" />{os.endereco}</p>
                     </div>
-                    <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${os.status.includes('Concluído') ? 'bg-emerald-100 text-emerald-800' : 'bg-sky-100 text-sky-800'}`}>
-                      {os.status}
-                    </span>
                   </div>
 
                   <div className="space-y-2 text-xs">
-                    <p><strong className="text-slate-700">Equipamento:</strong> {os.equipamento}</p>
-                    <p><strong className="text-slate-700">Serviço:</strong> {os.servico}</p>
+                    <p><strong>Serviço:</strong> {os.servico}</p>
                     
-                    {!isTecnicoOuAjudante && (
-                      <p className="pt-2 border-t"><strong className="text-slate-700">Valor da OS: </strong> <span className="text-emerald-600 font-bold text-sm">R$ {os.valor.toFixed(2)}</span></p>
-                    )}
+                    <div className="bg-slate-50 p-3 rounded-xl border space-y-2">
+                      <div className="flex justify-between items-center">
+                        <strong className="text-navy text-xs flex items-center"><Package className="w-3.5 h-3.5 mr-1 text-turquoise" /> Peças Utilizadas:</strong>
+                        <button onClick={() => setOsEditandoPecas(os)} className="text-[11px] bg-turquoise/20 text-navy font-bold px-2 py-1 rounded-lg">
+                          + Add Peça
+                        </button>
+                      </div>
+
+                      {os.pecasUtilizadas && os.pecasUtilizadas.length > 0 ? (
+                        <ul className="space-y-1 text-[11px] text-slate-600">
+                          {os.pecasUtilizadas.map((p: any, idx: number) => (
+                            <li key={idx} className="flex justify-between border-b pb-1">
+                              <span>{p.quantidade}x {p.nome}</span>
+                              <strong className="text-navy">R$ {p.total.toFixed(2)}</strong>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-[11px] text-slate-400 italic">Nenhuma peça adicionada do estoque.</p>
+                      )}
+                    </div>
+
+                    <div className="pt-2 border-t flex justify-between items-center">
+                      <span className="text-slate-900 font-extrabold text-base">Total OS: <strong className="text-emerald-600">R$ {os.valorTotal.toFixed(2)}</strong></span>
+                    </div>
                   </div>
 
-                  <div className="bg-slate-50 p-3 rounded-xl border text-xs space-y-1">
-                    <p className="font-bold text-slate-700">Checklist Obrigatório:</p>
-                    <ul className="list-disc list-inside text-slate-600 space-y-0.5">
-                      <li>Higienização com bolsa coletora e bactericida</li>
-                      <li>Verificação de pressões no manifold digital</li>
-                    </ul>
-                  </div>
-
-                  <div className="pt-2 flex flex-wrap gap-2">
-                    {!os.status.includes('Concluído') && (
-                      <button onClick={() => concluirAtendimentoOS(os.id)} className="flex-1 bg-turquoise hover:bg-turquoise-hover text-navy font-bold py-2.5 px-3 rounded-xl text-xs cursor-pointer shadow">
-                        Concluir Atendimento ✅
-                      </button>
-                    )}
-                    
-                    {isAdmOrGerente && (
-                      <button onClick={() => excluirOS(os.id)} className="bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center space-x-1 cursor-pointer">
-                        <Trash2 className="w-3.5 h-3.5" />
-                        <span>Excluir</span>
-                      </button>
-                    )}
-
-                    <a href={`https://maps.google.com/?q=${encodeURIComponent(os.endereco)}`} target="_blank" className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center justify-center">
-                      GPS
-                    </a>
+                  <div className="pt-2 flex gap-2">
+                    <button onClick={() => setOsParaPdf(os)} className="bg-navy text-turquoise font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center space-x-1.5 flex-1 shadow">
+                      <Printer className="w-4 h-4" />
+                      <span>Gerar Comprovante / PDF</span>
+                    </button>
                   </div>
                 </div>
               ))}
@@ -710,112 +409,47 @@ export default function MasterClimaProV6() {
           </div>
         )}
 
-        {activeModule === 'AGENDA' && (
+        {activeModule === 'ESTOQUE' && (
           <div className="space-y-6">
             <div className="border-b pb-4">
-              <h2 className="text-2xl font-extrabold text-navy">Módulo 5: Agenda Automática de Serviços</h2>
-              <p className="text-xs text-slate-500">Calendário de atendimentos.</p>
-            </div>
-            <div className="bg-white rounded-2xl border p-6 space-y-4">
-              {ordensServico.map((item, idx) => (
-                <div key={idx} className="border rounded-xl p-4 bg-slate-50 flex justify-between items-center">
-                  <div>
-                    <span className="bg-turquoise/20 text-navy text-xs font-mono font-bold px-2 py-0.5 rounded">{item.dataAgendamento}</span>
-                    <h4 className="font-bold text-navy text-sm mt-1">{item.cliente}</h4>
-                    <p className="text-xs text-slate-600">{item.servico}</p>
-                  </div>
-                  <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full">{item.status}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {activeModule === 'FINANCEIRO' && isAdmOrGerente && (
-          <div className="space-y-6">
-            <div className="border-b pb-4">
-              <h2 className="text-2xl font-extrabold text-navy">Módulo 6: Caixa & Lucro Real</h2>
-              <p className="text-xs text-slate-500">Faturamento consolidado.</p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-              <div className="bg-white p-5 rounded-2xl border shadow-sm">
-                <span className="text-xs font-bold text-slate-500 uppercase">Entrada de OS</span>
-                <p className="text-3xl font-black text-navy mt-1">R$ {totalEntradaFaturamento.toFixed(2)}</p>
-              </div>
-              <div className="bg-white p-5 rounded-2xl border shadow-sm">
-                <span className="text-xs font-bold text-slate-500 uppercase">Mensalidades Recebidas</span>
-                <p className="text-3xl font-black text-emerald-600 mt-1">R$ {totalMensalidadesRecebidas.toFixed(2)}</p>
-              </div>
-              <div className="bg-white p-5 rounded-2xl border shadow-sm">
-                <span className="text-xs font-bold text-slate-500 uppercase">Faturamento Total</span>
-                <p className="text-3xl font-black text-turquoise mt-1">R$ {(totalEntradaFaturamento + totalMensalidadesRecebidas).toFixed(2)}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeModule === 'EQUIPE' && currentUser.cargo === 'ADMIN' && (
-          <div className="space-y-6">
-            <div className="border-b pb-4">
-              <h2 className="text-2xl font-extrabold text-navy">Módulo 7: Gestão de Equipe, Acessos & Senhas</h2>
-              <p className="text-xs text-slate-500">Cadastre novos funcionários, defina senhas de acesso e edite quando precisar.</p>
+              <h2 className="text-2xl font-extrabold text-navy">Controle de Estoque de Peças & Materiais</h2>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <form onSubmit={adicionarFuncionario} className="bg-white p-6 rounded-2xl border shadow-sm space-y-4 lg:col-span-1">
-                <h3 className="font-bold text-navy text-sm border-b pb-2 flex items-center space-x-2">
-                  <Plus className="w-4 h-4 text-turquoise" />
-                  <span>Cadastrar Funcionário</span>
-                </h3>
+              <form onSubmit={adicionarPecaEstoque} className="bg-white p-6 rounded-2xl border shadow-sm space-y-4 lg:col-span-1">
+                <h3 className="font-bold text-navy text-sm border-b pb-2">Cadastrar Item no Estoque</h3>
                 <div className="space-y-3 text-xs">
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1">Nome Completo *</label>
-                    <input type="text" value={novoNomeFunc} onChange={e => setNovoNomeFunc(e.target.value)} placeholder="Ex: Roberto Técnico" required className="w-full p-2.5 border rounded-xl" />
+                    <label className="block font-bold mb-1">Nome da Peça *</label>
+                    <input type="text" value={novoNomePeca} onChange={e => setNovoNomePeca(e.target.value)} placeholder="Ex: Capacitor 35uF" required className="w-full p-2.5 border rounded-xl" />
                   </div>
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">E-mail de Login *</label>
-                    <input type="email" value={novoEmailFunc} onChange={e => setNovoEmailFunc(e.target.value)} placeholder="roberto@nando.climatizacao" required className="w-full p-2.5 border rounded-xl" />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-bold mb-1">Quantidade *</label>
+                      <input type="number" value={novaQtdPeca} onChange={e => setNovaQtdPeca(Number(e.target.value))} required className="w-full p-2.5 border rounded-xl font-bold" />
+                    </div>
+                    <div>
+                      <label className="block font-bold mb-1">Preço Unit. *</label>
+                      <input type="number" value={novoValorPeca} onChange={e => setNovoValorPeca(Number(e.target.value))} required className="w-full p-2.5 border rounded-xl font-bold" />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Senha de Acesso *</label>
-                    <input type="text" value={novaSenhaFunc} onChange={e => setNovaSenhaFunc(e.target.value)} placeholder="123456" required className="w-full p-2.5 border rounded-xl font-mono" />
-                  </div>
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Cargo / Permissão</label>
-                    <select value={novoCargoFunc} onChange={e => setNovoCargoFunc(e.target.value)} className="w-full p-2.5 border rounded-xl bg-white font-semibold">
-                      <option value="GERENTE">Gerente</option>
-                      <option value="SECRETARIA">Secretária</option>
-                      <option value="TECNICO">Técnico</option>
-                      <option value="AJUDANTE">Ajudante</option>
-                    </select>
-                  </div>
-                  <button type="submit" className="w-full bg-turquoise hover:bg-turquoise-hover text-navy font-bold py-3 rounded-xl cursor-pointer shadow-md mt-2">
-                    Adicionar Funcionário
-                  </button>
+                  <button type="submit" className="w-full bg-turquoise text-navy font-bold py-3 rounded-xl shadow">Adicionar ao Estoque</button>
                 </div>
               </form>
 
               <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4 lg:col-span-2">
-                <h3 className="font-bold text-navy text-sm border-b pb-2">Equipe Ativa & Senhas ({equipe.length})</h3>
+                <h3 className="font-bold text-navy text-sm border-b pb-2">Itens em Estoque ({estoque.length})</h3>
                 <div className="space-y-3">
-                  {equipe.map((func) => (
-                    <div key={func.id} className="border rounded-xl p-4 bg-slate-50 flex justify-between items-center">
+                  {estoque.map((item) => (
+                    <div key={item.id} className="border rounded-xl p-4 bg-slate-50 flex justify-between items-center">
                       <div>
-                        <h4 className="font-bold text-navy text-sm">{func.nome}</h4>
-                        <p className="text-xs text-slate-500">{func.email} — <strong className="text-turquoise">{func.cargo}</strong></p>
-                        <p className="text-[11px] font-mono text-slate-400 mt-0.5">Senha atual: {func.senha || '123456'}</p>
+                        <span className="text-[10px] font-mono font-bold bg-navy text-turquoise px-2 py-0.5 rounded">{item.codigo}</span>
+                        <h4 className="font-bold text-navy text-sm mt-1">{item.nome}</h4>
+                        <p className="text-xs text-slate-500">Preço: R$ {item.precoUnitario.toFixed(2)}</p>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <button onClick={() => setFuncEditando(func)} className="bg-navy text-turquoise text-xs font-bold px-3 py-2 rounded-lg cursor-pointer flex items-center space-x-1 shadow">
-                          <Edit3 className="w-3.5 h-3.5" />
-                          <span>Editar Senha</span>
-                        </button>
-                        {func.cargo !== 'ADMIN' && (
-                          <button onClick={() => excluirFuncionario(func.id)} className="bg-rose-100 hover:bg-rose-200 text-rose-700 p-2 rounded-lg cursor-pointer" title="Remover">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
+                      <span className={`text-xs font-extrabold px-3 py-1.5 rounded-full ${item.quantidade <= 3 ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'}`}>
+                        Saldo: {item.quantidade} un.
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -823,210 +457,117 @@ export default function MasterClimaProV6() {
             </div>
           </div>
         )}
-
-        {activeModule === 'ASSISTENTE' && (
-          <div className="space-y-6">
-            <div className="border-b pb-4">
-              <h2 className="text-2xl font-extrabold text-navy">Módulo 8: Assistente Técnico IA Avançado</h2>
-              <p className="text-xs text-slate-500">Digite qualquer dúvida, sintoma ("não gela", "barulho", "vazando água") ou código de erro (E6, EC, F1)...</p>
-            </div>
-
-            <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
-              <div className="relative">
-                <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
-                <input 
-                  type="text" 
-                  value={buscaErro} 
-                  onChange={e => setBuscaErro(e.target.value)} 
-                  placeholder="Ex: Ar condicionado Elgin não gela, erro E6, barulho na condensadora..." 
-                  className="w-full pl-11 pr-4 py-3 border rounded-xl text-sm font-semibold focus:ring-2 focus:ring-turquoise"
-                />
-              </div>
-
-              <div className="space-y-3 pt-2">
-                {errosFiltrados.length > 0 ? (
-                  errosFiltrados.map((err, i) => (
-                    <div key={i} className="border rounded-xl p-4 bg-slate-50 space-y-2">
-                      <div className="flex justify-between items-center border-b pb-2">
-                        <span className="font-bold text-navy text-sm">{err.titulo}</span>
-                      </div>
-                      <p className="text-xs text-slate-700 bg-white p-3 rounded-lg border leading-relaxed">
-                        <strong className="text-navy">Solução / Diagnóstico:</strong> {err.solucao}
-                      </p>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-8 text-slate-500 text-xs space-y-2">
-                    <p className="font-bold text-navy text-sm">💡 Dica da IA ClimaPro:</p>
-                    <p>O assistente compreende termos livres como "não gela", "vazando água", "barulho", ou marcas como "Fujitsu", "Midea", "Daikin", "Elgin", "Brastemp". Tente digitar o problema com suas palavras!</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
       </main>
 
-      {clienteVisualizando && (
+      {/* MODAL EDITAR PEÇAS NA OS */}
+      {osEditandoPecas && (
         <div className="fixed inset-0 bg-navy/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 space-y-6 shadow-2xl">
             <div className="flex justify-between items-center border-b pb-4">
-              <div>
-                <span className="text-[10px] font-mono font-bold bg-turquoise/20 text-navy px-2.5 py-0.5 rounded">Ficha do Cliente</span>
-                <h3 className="text-xl font-black text-navy mt-1">{clienteVisualizando.nome}</h3>
-              </div>
-              <button onClick={() => setClienteVisualizando(null)} className="text-slate-400 hover:text-slate-600 p-2 cursor-pointer">
-                <X className="w-6 h-6" />
-              </button>
+              <h3 className="text-xl font-black text-navy">Lançar Peça do Estoque na OS</h3>
+              <button onClick={() => setOsEditandoPecas(null)} className="text-slate-400 p-2"><X className="w-6 h-6" /></button>
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-slate-50 p-4 rounded-2xl border">
+            <div className="space-y-4 text-xs">
               <div>
-                <strong className="text-slate-500 block uppercase text-[10px]">Telefone / WhatsApp</strong>
-                <p className="font-bold text-navy text-sm mt-0.5">{clienteVisualizando.telefone}</p>
-              </div>
-              <div>
-                <strong className="text-slate-500 block uppercase text-[10px]">Endereço</strong>
-                <p className="font-bold text-navy text-sm mt-0.5">{clienteVisualizando.endereco}</p>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <h4 className="font-bold text-navy text-sm">Aparelhos Instalados ({clienteVisualizando.equipamentos.length})</h4>
-              </div>
-
-              <div className="space-y-2">
-                {clienteVisualizando.equipamentos.length > 0 ? (
-                  clienteVisualizando.equipamentos.map((ap: any) => (
-                    <div key={ap.id} className="border rounded-xl p-3 bg-slate-50 flex justify-between items-center text-xs">
-                      <div>
-                        <strong className="text-navy text-sm">{ap.tipo} — {ap.marca} ({ap.btu})</strong>
-                        <p className="text-slate-500 mt-0.5">📍 Local instalado: <strong className="text-turquoise">{ap.local}</strong></p>
-                      </div>
-                      <button onClick={() => removerAparelhoCliente(clienteVisualizando.id, ap.id)} className="text-rose-600 hover:text-rose-700 p-2 cursor-pointer" title="Remover Aparelho">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-xs text-slate-400 py-3 text-center bg-slate-50 rounded-xl">Nenhum aparelho cadastrado para este cliente ainda.</p>
-                )}
-              </div>
-            </div>
-
-            <div className="border-t pt-4 space-y-3">
-              <h4 className="font-bold text-navy text-xs uppercase">Adicionar Aparelho ao Cliente</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Tipo</label>
-                  <select value={novoTipoEq} onChange={e => setNovoTipoEq(e.target.value)} className="w-full p-2.5 border rounded-xl bg-white font-semibold">
-                    <option value="Split Hi-Wall">Split Hi-Wall</option>
-                    <option value="Split Inverter">Split Inverter</option>
-                    <option value="Split Cassete">Split Cassete</option>
-                    <option value="Piso Teto">Piso Teto</option>
-                    <option value="Geladeira / Freezer">Geladeira / Freezer</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Marca</label>
-                  <input type="text" value={novaMarcaEq} onChange={e => setNovaMarcaEq(e.target.value)} placeholder="Ex: Fujitsu, Midea" className="w-full p-2.5 border rounded-xl" />
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Capacidade (BTU)</label>
-                  <input type="text" value={novoBtuEq} onChange={e => setNovoBtuEq(e.target.value)} placeholder="Ex: 12.000 BTU" className="w-full p-2.5 border rounded-xl" />
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Local / Cômodo</label>
-                  <input type="text" value={novoLocalEq} onChange={e => setNovoLocalEq(e.target.value)} placeholder="Ex: Quarto Casal, Sala, Cozinha" className="w-full p-2.5 border rounded-xl" />
-                </div>
-              </div>
-              <button onClick={() => adicionarAparelhoCliente(clienteVisualizando.id)} className="w-full bg-turquoise hover:bg-turquoise-hover text-navy font-bold py-3 rounded-xl text-xs cursor-pointer shadow mt-2">
-                Adicionar Aparelho no Local
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {modalDetalheMensalidade && (
-        <div className="fixed inset-0 bg-navy/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center border-b pb-4">
-              <div>
-                <span className="text-[10px] font-mono font-bold bg-navy text-turquoise px-2.5 py-0.5 rounded">Contrato {modalDetalheMensalidade.id}</span>
-                <h3 className="text-xl font-black text-navy mt-1">{modalDetalheMensalidade.cliente}</h3>
-              </div>
-              <button onClick={() => setModalDetalheMensalidade(null)} className="text-slate-400 hover:text-slate-600 p-2 cursor-pointer">
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <p><strong className="text-slate-600">Tipo:</strong> {modalDetalheMensalidade.tipoContrato}</p>
-              <p><strong className="text-slate-600">Valor Mensal:</strong> R$ {modalDetalheMensalidade.valorMensal.toFixed(2)}</p>
-              <p className="font-bold text-emerald-700">Parcelas Quitadas: {modalDetalheMensalidade.parcelasPagas} de {modalDetalheMensalidade.totalParcelas}</p>
-            </div>
-
-            <div className="space-y-2 border-t pt-4">
-              <h4 className="font-bold text-navy text-xs uppercase">Clique na parcela para marcar como Paga ou Pendente:</h4>
-              <div className="space-y-2 max-h-60 overflow-y-auto">
-                {modalDetalheMensalidade.historicoPagamentos.map((parc: any, index: number) => (
-                  <div key={index} className="border rounded-xl p-3 bg-slate-50 flex justify-between items-center text-xs">
-                    <div>
-                      <strong className="text-navy">{parc.mes}</strong>
-                      <p className="text-slate-500">Valor: R$ {parc.valor.toFixed(2)}</p>
-                    </div>
-                    <button 
-                      onClick={() => alternarStatusParcela(modalDetalheMensalidade.id, index)}
-                      className={`px-3 py-1.5 rounded-lg font-bold cursor-pointer text-xs ${parc.status.includes('Pago') ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}
-                    >
-                      {parc.status}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {funcEditando && (
-        <div className="fixed inset-0 bg-navy/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-6 shadow-2xl">
-            <div className="flex justify-between items-center border-b pb-4">
-              <h3 className="text-xl font-black text-navy">Editar Funcionário & Senha</h3>
-              <button onClick={() => setFuncEditando(null)} className="text-slate-400 hover:text-slate-600 p-2 cursor-pointer">
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            <form onSubmit={salvarEdicaoFuncionario} className="space-y-4 text-xs">
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Nome</label>
-                <input type="text" value={funcEditando.nome} onChange={e => setFuncEditando({ ...funcEditando, nome: e.target.value })} required className="w-full p-2.5 border rounded-xl" />
-              </div>
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">E-mail de Login</label>
-                <input type="email" value={funcEditando.email} onChange={e => setFuncEditando({ ...funcEditando, email: e.target.value })} required className="w-full p-2.5 border rounded-xl" />
-              </div>
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Nova Senha de Acesso</label>
-                <input type="text" value={funcEditando.senha || ''} onChange={e => setFuncEditando({ ...funcEditando, senha: e.target.value })} placeholder="Digite a nova senha" required className="w-full p-2.5 border rounded-xl font-mono font-bold" />
-              </div>
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Cargo</label>
-                <select value={funcEditando.cargo} onChange={e => setFuncEditando({ ...funcEditando, cargo: e.target.value })} className="w-full p-2.5 border rounded-xl bg-white font-semibold">
-                  <option value="GERENTE">Gerente</option>
-                  <option value="SECRETARIA">Secretária</option>
-                  <option value="TECNICO">Técnico</option>
-                  <option value="AJUDANTE">Ajudante</option>
+                <label className="block font-bold mb-1">Selecione o Item do Estoque</label>
+                <select value={pecaSelecionadaId} onChange={e => setPecaSelecionadaId(Number(e.target.value))} className="w-full p-3 border rounded-xl">
+                  {estoque.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.nome} — Saldo: {item.quantidade} un. (R$ {item.precoUnitario.toFixed(2)})
+                    </option>
+                  ))}
                 </select>
               </div>
-              <button type="submit" className="w-full bg-turquoise hover:bg-turquoise-hover text-navy font-bold py-3 rounded-xl cursor-pointer shadow">
-                Salvar Alterações
+              <div>
+                <label className="block font-bold mb-1">Quantidade</label>
+                <input type="number" min={1} value={qtdPecaOS} onChange={e => setQtdPecaOS(Number(e.target.value))} required className="w-full p-2.5 border rounded-xl font-bold" />
+              </div>
+              <button onClick={() => adicionarPecaNaOS(osEditandoPecas.id)} className="w-full bg-turquoise text-navy font-bold py-3 rounded-xl shadow">
+                Lançar na OS & Baixar do Estoque 🚀
               </button>
-            </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL DE COMPROVANTE OFICIAL EM PDF */}
+      {osParaPdf && (
+        <div className="fixed inset-0 bg-navy/90 backdrop-blur-md flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-8 space-y-6 shadow-2xl text-slate-900" id="comprovante-print">
+            <div className="border-b-2 border-navy pb-4 flex justify-between items-center">
+              <div>
+                <h1 className="text-2xl font-black text-navy">NANDO'S <span className="text-turquoise">CLIMATIZAÇÃO</span></h1>
+                <p className="text-xs text-slate-600 font-bold">Instalação, Manutenção & Sanitização de Ar-Condicionado</p>
+                <p className="text-[11px] text-slate-500">(14) 99168-9815 | Bauru - SP</p>
+              </div>
+              <div className="text-right">
+                <span className="text-xs font-mono font-bold bg-navy text-turquoise px-3 py-1 rounded-lg">RECIBO DE OS</span>
+                <p className="text-sm font-black text-navy mt-1">{osParaPdf.id}</p>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 p-4 rounded-2xl border grid grid-cols-2 gap-4 text-xs">
+              <div>
+                <strong className="text-slate-400 block text-[10px] uppercase">Cliente</strong>
+                <p className="font-bold text-navy text-sm">{osParaPdf.cliente}</p>
+                <p className="text-slate-600">{osParaPdf.telefone}</p>
+              </div>
+              <div>
+                <strong className="text-slate-400 block text-[10px] uppercase">Endereço</strong>
+                <p className="font-bold text-navy text-xs">{osParaPdf.endereco}</p>
+              </div>
+            </div>
+
+            <div className="space-y-2 text-xs">
+              <h3 className="font-extrabold text-navy border-b pb-1">Valores & Serviços</h3>
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-100 text-slate-700 border-b">
+                    <th className="p-2">Descrição</th>
+                    <th className="p-2 text-center">Qtd</th>
+                    <th className="p-2 text-right">Total</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y text-slate-700">
+                  <tr>
+                    <td className="p-2 font-semibold">Mão de Obra Técnica Especializada</td>
+                    <td className="p-2 text-center">1</td>
+                    <td className="p-2 text-right font-bold text-navy">R$ {osParaPdf.valorServico.toFixed(2)}</td>
+                  </tr>
+                  {osParaPdf.pecasUtilizadas && osParaPdf.pecasUtilizadas.map((p: any, idx: number) => (
+                    <tr key={idx}>
+                      <td className="p-2">{p.nome}</td>
+                      <td className="p-2 text-center">{p.quantidade}</td>
+                      <td className="p-2 text-right font-bold text-navy">R$ {p.total.toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <div className="bg-slate-100 p-4 rounded-xl flex justify-between items-center text-sm font-black text-navy border">
+                <span>VALOR TOTAL:</span>
+                <span className="text-lg text-emerald-600">R$ {osParaPdf.valorTotal.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div className="border-t pt-6 grid grid-cols-2 gap-8 text-center text-xs">
+              <div>
+                <div className="border-b border-slate-400 mb-1 w-3/4 mx-auto"></div>
+                <p className="font-bold text-navy">Nando's Climatização</p>
+              </div>
+              <div>
+                <div className="border-b border-slate-400 mb-1 w-3/4 mx-auto"></div>
+                <p className="font-bold text-navy">{osParaPdf.cliente}</p>
+              </div>
+            </div>
+
+            <div className="border-t pt-4 flex justify-between items-center">
+              <button onClick={() => setOsParaPdf(null)} className="bg-slate-200 text-slate-800 font-bold px-4 py-2.5 rounded-xl text-xs">Fechar</button>
+              <button onClick={() => window.print()} className="bg-turquoise text-navy font-black px-6 py-2.5 rounded-xl text-xs flex items-center space-x-2 shadow-lg">
+                <Printer className="w-4 h-4" />
+                <span>Imprimir / Salvar como PDF</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
